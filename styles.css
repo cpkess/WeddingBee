@@ -350,6 +350,30 @@ button{font-family:inherit;cursor:pointer;}
 .incl-card h4{font-family:var(--font-display);font-weight:800;font-size:18px;margin:0 0 6px;}
 .incl-card p{margin:0;color:var(--ink-soft);font-size:14.5px;}
 
+/* inline editing (venue page) */
+.edit-only{display:none;}
+body.editing .view-only{display:none;}
+body.editing .edit-toolbar{display:flex;}
+body.editing .edit-row{display:flex;}
+body.editing .edit-input{display:block;}
+body.editing .ve-incl-list{display:flex;}
+body.editing [data-editable="text"]{outline:1px dashed var(--accent-deep);outline-offset:3px;border-radius:4px;cursor:text;}
+body.editing [data-editable="text"]:focus{outline-style:solid;background:rgba(255,255,255,.5);}
+
+.edit-toolbar{align-items:center;gap:16px;flex-wrap:wrap;margin:-10px 0 18px;padding:14px 18px;background:var(--accent-tint);border-radius:var(--r-md);}
+.edit-toolbar .swatch{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:var(--accent-deep);}
+.edit-toolbar .swatch input[type="color"]{width:34px;height:34px;border:none;border-radius:8px;padding:0;cursor:pointer;background:none;}
+.edit-toolbar #deleteVenue{margin-left:auto;color:var(--coral);border-color:var(--coral);}
+.edit-toolbar #deleteVenue:hover{background:var(--coral);color:#fff;}
+
+.edit-input{font:inherit;font-size:13.5px;border:1.5px solid var(--line);border-radius:8px;padding:8px 11px;background:var(--paper);color:var(--ink);width:100%;}
+.edit-input:focus{outline:none;border-color:var(--accent);}
+
+.srcbar-edit{gap:12px;margin:-6px 0 30px;padding:16px 18px;background:var(--accent-tint);border-radius:var(--r-md);}
+.edit-input-wrap{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--accent-deep);flex:1 1 180px;}
+
+#inclEdit #addInclItem{margin-top:4px;align-self:flex-start;}
+
 /* notes */
 .notes{padding:20px 0 10px;}
 .notes .box{background:var(--accent-tint);border-radius:var(--r-lg);padding:30px 32px;}

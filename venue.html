@@ -40,7 +40,6 @@
 <script type="module" src="data-store.js"></script>
 <script src="image-slot.js"></script>
 <script src="data.js"></script>
-<script src="venue-editor.js"></script>
 <script>
 (function(){
   function waitFor(check, timeout, interval){
@@ -85,42 +84,61 @@
           <button class="fave" data-venue="${v.id}" data-state="love" aria-pressed="false"><span class="ic">&#9829;</span>Love it</button>
           <button class="fave" data-venue="${v.id}" data-state="maybe" aria-pressed="false"><span class="ic">&#128077;</span>Maybe</button>
           <button class="fave" data-venue="${v.id}" data-state="info" aria-pressed="false"><span class="ic">&#128269;</span>More info</button>
-          <button class="vedit" data-act="edit-venue">&#9998; Edit venue</button>
+          <button class="vedit" id="editToggle">&#9998; Edit venue</button>
         </div>
       </div>
-      <div class="sub">
-        <span class="theme"><span class="sq"></span>${esc(v.theme||'')}</span>
-        <span>&#9679; ${esc(v.location||'')}</span>
+      <div class="edit-only edit-toolbar">
+        <label class="swatch">Accent <input type="color" data-field="vc" value="${/^#/.test(v.vc||'')?v.vc:'#0FB5BC'}"></label>
+        <label class="swatch">Accent (deep) <input type="color" data-field="vcDeep" value="${/^#/.test(v.vcDeep||'')?v.vcDeep:'#0A8A90'}"></label>
+        <button class="vedit" id="deleteVenue">&#128465; Delete venue</button>
       </div>
-      <h1>${esc(v.name)}</h1>
+      <div class="sub">
+        <span class="theme"><span class="sq"></span><span data-field="theme" data-editable="text">${esc(v.theme||'')}</span></span>
+        <span>&#9679; <span data-field="location" data-editable="text">${esc(v.location||'')}</span></span>
+      </div>
+      <h1 data-field="name" data-editable="text">${esc(v.name)}</h1>
       <div class="vhero-media">
         <image-slot id="${v.id}-hero" shape="rect" fit="cover" placeholder="Drop your hero photo of ${esc(v.name)}"></image-slot>
       </div>
     </div></section>`;
 
     /* intro */
+    function moodsViewHTML(){
+      return (v.moods||[]).map(m=>`<span class="tag">${esc(m)}</span>`).join('');
+    }
     const introHTML = `
     <section class="vhero"><div class="wrap"><div class="vintro">
       <div>
-        <p class="lead">${esc(v.lead)}</p>
-        <span class="note hand">${esc(v.note)}</span>
+        <p class="lead" data-field="lead" data-editable="text">${esc(v.lead)}</p>
+        <span class="note hand" data-field="note" data-editable="text">${esc(v.note)}</span>
       </div>
       <div class="why">
         <h4>Why it&rsquo;s interesting</h4>
-        <p>${esc(v.why)}</p>
-        <div class="tags" style="margin-top:16px">${(v.moods||[]).map(m=>`<span class="tag">${esc(m)}</span>`).join('')}</div>
+        <p data-field="why" data-editable="text">${esc(v.why)}</p>
+        <div class="tags view-only" id="moodsView" style="margin-top:16px">${moodsViewHTML()}</div>
+        <input class="edit-only edit-input" id="moodsEdit" data-field="moods" value="${esc((v.moods||[]).join(', '))}" placeholder="Tropical, Elegant, Fun" style="margin-top:16px">
       </div>
     </div></div></section>`;
 
     /* gallery */
+    function srcbarHTML(){
+      const s = v.sources || {};
+      const t = v.searchTerm || (v.name+" wedding");
+      return `<span class="srclabel">&#128247; Find ${esc(v.name)} photos:</span>
+        ${s.site?`<a class="srcbtn" href="${esc(s.site)}" target="_blank" rel="noopener">&#127760; Official site &nearr;</a>`:''}
+        ${s.ig?`<a class="srcbtn" href="${esc(s.ig)}" target="_blank" rel="noopener">&#128248; Instagram ${s.igLabel?`<span class="muted">${esc(s.igLabel)}</span>`:''} &nearr;</a>`:''}
+        <a class="srcbtn" href="${pinSearch(t)}" target="_blank" rel="noopener">&#128204; Pinterest &nearr;</a>
+        <a class="srcbtn" href="${gImages(t)}" target="_blank" rel="noopener">&#128269; Google Images &nearr;</a>`;
+    }
     let galHTML = `<section class="gal"><div class="wrap">
       <div class="sec-head"><div><span class="kicker">The galleries</span><h2 class="sec-title" style="font-family:var(--font-display);font-weight:800;font-size:clamp(30px,4.4vw,52px);letter-spacing:-.02em;margin:.25em 0 0;line-height:1">What it feels like to marry here</h2></div><p>Every frame is a drop-zone &mdash; drag a picture you love straight onto it, even from another browser tab. Already filled? <strong>Hover it for Replace / Remove.</strong> Tap the <strong>&#9825;</strong> to pin it to your board.</p></div>
-      <div class="srcbar">
-        <span class="srclabel">&#128247; Find ${esc(v.name)} photos:</span>
-        ${sources.site?`<a class="srcbtn" href="${esc(sources.site)}" target="_blank" rel="noopener">&#127760; Official site &nearr;</a>`:''}
-        ${sources.ig?`<a class="srcbtn" href="${esc(sources.ig)}" target="_blank" rel="noopener">&#128248; Instagram ${sources.igLabel?`<span class="muted">${esc(sources.igLabel)}</span>`:''} &nearr;</a>`:''}
-        <a class="srcbtn" href="${pinSearch(term)}" target="_blank" rel="noopener">&#128204; Pinterest &nearr;</a>
-        <a class="srcbtn" href="${gImages(term)}" target="_blank" rel="noopener">&#128269; Google Images &nearr;</a>
+      <div class="srcbar view-only" id="srcbar">${srcbarHTML()}</div>
+      <div class="edit-only edit-row srcbar-edit">
+        <label class="edit-input-wrap">Site URL<input class="edit-input" data-field="sources.site" value="${esc(sources.site)}" placeholder="https://"></label>
+        <label class="edit-input-wrap">Site label<input class="edit-input" data-field="sources.siteLabel" value="${esc(sources.siteLabel)}" placeholder="example.com"></label>
+        <label class="edit-input-wrap">Instagram URL<input class="edit-input" data-field="sources.ig" value="${esc(sources.ig)}" placeholder="https://instagram.com/..."></label>
+        <label class="edit-input-wrap">Instagram label<input class="edit-input" data-field="sources.igLabel" value="${esc(sources.igLabel)}" placeholder="@handle"></label>
+        <label class="edit-input-wrap">Search term<input class="edit-input" data-field="searchTerm" value="${esc(v.searchTerm)}" placeholder="Venue name + wedding"></label>
       </div>`;
     const heights = [320,240,280,360,260];
     function shotCellHTML(cat, id, caption, h, idx){
@@ -157,16 +175,29 @@
     galHTML += `</div></section>`;
 
     /* included */
-    let inclHTML = '';
-    if((v.included||[]).length){
-      inclHTML = `<section class="incl"><div class="wrap">
-        <div class="sec-head"><div><span class="kicker">The practical magic</span><h2 style="font-family:var(--font-display);font-weight:800;font-size:clamp(30px,4.4vw,52px);letter-spacing:-.02em;margin:.25em 0 0;line-height:1">What&rsquo;s included</h2></div><p>The good stuff this venue brings to the table &mdash; researched, not guessed.</p></div>
-        <div class="incl-grid">`;
-      v.included.forEach(c=>{
-        inclHTML += `<div class="incl-card"><div class="ic">${esc(c.ic)}</div><h4>${esc(c.title)}</h4><p>${esc(c.desc)}</p></div>`;
-      });
-      inclHTML += `</div></div></section>`;
+    function inclViewHTML(){
+      return (v.included||[]).map(c=>
+        `<div class="incl-card"><div class="ic">${esc(c.ic)}</div><h4>${esc(c.title)}</h4><p>${esc(c.desc)}</p></div>`
+      ).join('');
     }
+    function inclEditRowHTML(c, i){
+      c = c || {ic:'',title:'',desc:''};
+      return `<div class="ve-incl-row" data-incl-idx="${i}">
+        <input class="ve-incl-ic edit-input" data-field="included.${i}.ic" value="${esc(c.ic)}" placeholder="\u{1F4CC}" maxlength="4">
+        <input class="ve-incl-title edit-input" data-field="included.${i}.title" value="${esc(c.title)}" placeholder="Title">
+        <input class="ve-incl-desc edit-input" data-field="included.${i}.desc" value="${esc(c.desc)}" placeholder="Description">
+        <button type="button" class="ve-incl-remove" data-act="remove-incl" aria-label="Remove">&times;</button>
+      </div>`;
+    }
+    function inclEditHTML(){
+      return (v.included||[]).map((c,i)=>inclEditRowHTML(c,i)).join('')
+        + `<button type="button" class="vedit" id="addInclItem">+ Add item</button>`;
+    }
+    const inclHTML = `<section class="incl" id="inclSection"${(v.included||[]).length?'':' style="display:none"'}><div class="wrap">
+      <div class="sec-head"><div><span class="kicker">The practical magic</span><h2 style="font-family:var(--font-display);font-weight:800;font-size:clamp(30px,4.4vw,52px);letter-spacing:-.02em;margin:.25em 0 0;line-height:1">What&rsquo;s included</h2></div><p>The good stuff this venue brings to the table &mdash; researched, not guessed.</p></div>
+      <div class="incl-grid view-only" id="inclView">${inclViewHTML()}</div>
+      <div class="edit-only ve-incl-list" id="inclEdit">${inclEditHTML()}</div>
+    </div></section>`;
 
     /* notes */
     const notesHTML = `<section class="notes"><div class="wrap"><div class="box">
@@ -183,28 +214,137 @@
     </div></div></section>` : '';
 
     document.getElementById('venuePage').innerHTML = heroHTML+introHTML+galHTML+inclHTML+notesHTML+navHTML;
+    const main = document.getElementById('venuePage');
 
-    const editBtn = document.querySelector('[data-act="edit-venue"]');
-    if(editBtn) editBtn.addEventListener('click', ()=>{
-      window.WedVenueEditor.openEdit(v, (result)=>{
-        if(result.deleted){ location.href = 'index.html#venues'; }
-        else { location.reload(); }
+    /* ---- inline editing ---- */
+    function setField(obj, path, value){
+      const parts = path.split('.');
+      let o = obj;
+      for(let i=0;i<parts.length-1;i++){
+        const k = parts[i];
+        if(o[k]==null) o[k] = /^\d+$/.test(parts[i+1]) ? [] : {};
+        o = o[k];
+      }
+      o[parts[parts.length-1]] = value;
+    }
+    function applyAccentColors(){
+      document.body.style.setProperty('--accent', v.vc || 'var(--sea)');
+      document.body.style.setProperty('--accent-deep', v.vcDeep || 'var(--sea-deep)');
+      document.body.style.setProperty('--accent-tint', `color-mix(in srgb, ${v.vc||'var(--sea)'} 16%, white)`);
+    }
+    function renderMoodsView(){
+      const el = document.getElementById('moodsView');
+      if(el) el.innerHTML = moodsViewHTML();
+    }
+    const srcbarEl = document.getElementById('srcbar');
+    function renderSrcbar(){
+      if(srcbarEl) srcbarEl.innerHTML = srcbarHTML();
+    }
+    const inclSection = document.getElementById('inclSection');
+    const inclViewEl = document.getElementById('inclView');
+    const inclEditEl = document.getElementById('inclEdit');
+    function renderInclView(){
+      if(inclViewEl) inclViewEl.innerHTML = inclViewHTML();
+      if(inclSection && !editing) inclSection.style.display = (v.included||[]).length ? '' : 'none';
+    }
+    function renderInclEdit(){
+      if(inclEditEl) inclEditEl.innerHTML = inclEditHTML();
+    }
+
+    let editing = false;
+    function setEditing(on){
+      editing = on;
+      document.body.classList.toggle('editing', on);
+      main.querySelectorAll('[data-editable="text"]').forEach(el=>{
+        el.contentEditable = on ? 'true' : 'false';
       });
+      editToggle.innerHTML = on ? '&#10003; Done editing' : '&#9998; Edit venue';
+      if(on){
+        if(inclSection) inclSection.style.display = '';
+      } else {
+        flushSave();
+        renderInclView();
+      }
+    }
+    const editToggle = document.getElementById('editToggle');
+    editToggle.addEventListener('click', ()=>{
+      if(!editing){
+        const auth = window.WedAuth;
+        if(!auth || !auth.isSignedIn()){
+          if(window.wedToast) window.wedToast('Sign in to edit this venue','\u{1F510}');
+          if(auth) auth.signIn();
+          return;
+        }
+      }
+      setEditing(!editing);
+    });
+
+    document.getElementById('deleteVenue').addEventListener('click', async ()=>{
+      if(!confirm(`Delete ${v.name}? This can't be undone.`)) return;
+      const store = await waitFor(()=>window.WedStore);
+      try{
+        await store.deleteVenue(v.id);
+        location.href = 'index.html#venues';
+      }catch(e){ if(window.wedToast) window.wedToast('Could not delete — try again',''); }
+    });
+
+    main.addEventListener('input', (e)=>{
+      const el = e.target.closest && e.target.closest('[data-field]');
+      if(!el || !editing) return;
+      const field = el.dataset.field;
+      const value = (el.tagName==='INPUT') ? el.value : el.textContent;
+      if(field==='moods'){
+        v.moods = value.split(',').map(s=>s.trim()).filter(Boolean);
+        renderMoodsView();
+      } else if(field==='vc' || field==='vcDeep'){
+        setField(v, field, value);
+        applyAccentColors();
+      } else if(field.startsWith('sources.') || field==='searchTerm'){
+        setField(v, field, value);
+        renderSrcbar();
+      } else {
+        setField(v, field, value);
+      }
+      scheduleSave();
+    });
+
+    main.addEventListener('click', (e)=>{
+      if(!editing) return;
+      const removeBtn = e.target.closest && e.target.closest('[data-act="remove-incl"]');
+      if(removeBtn){
+        const row = removeBtn.closest('[data-incl-idx]');
+        const i = parseInt(row.dataset.inclIdx,10);
+        v.included.splice(i,1);
+        renderInclEdit();
+        renderInclView();
+        scheduleSave();
+        return;
+      }
+      if(e.target.id==='addInclItem'){
+        v.included = v.included || [];
+        v.included.push({ic:'',title:'',desc:''});
+        renderInclEdit();
+        scheduleSave();
+      }
     });
 
     /* ---- on-page gallery photo adding ---- */
     let saveTimer;
     function scheduleSave(){
       clearTimeout(saveTimer);
-      saveTimer = setTimeout(async ()=>{
+      saveTimer = setTimeout(()=>{ saveTimer = null; flushSave(); }, 600);
+    }
+    function flushSave(){
+      if(saveTimer){ clearTimeout(saveTimer); saveTimer = null; }
+      (async ()=>{
         const store = await waitFor(()=>window.WedStore);
         if(!store) return;
         try{ await store.upsertVenue(v); }
         catch(e){
           const app = await waitFor(()=>window.WedApp);
-          if(app) app.toast('Sign in to add this to the shared gallery','\u{1F510}');
+          if(app) app.toast('Sign in to save your changes','\u{1F510}');
         }
-      }, 600);
+      })();
     }
     function rewire(){
       waitFor(()=>window.WedApp).then(app=>{ if(app) app.initPinButtons(); });
@@ -244,7 +384,6 @@
       rewire();
       scheduleSave();
     }
-    const main = document.getElementById('venuePage');
     main.addEventListener('imageslot-fill', (e)=>{
       const el = e.target;
       if(el && el.classList && el.classList.contains('add-slot')) promote(el);
