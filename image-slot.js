@@ -373,6 +373,10 @@
     if (loaded) persist(id, val); else load().then(() => persist(id, val));
   }
 
+  // Page-level UI (e.g. the gallery's "remove this empty slot" / re-index
+  // logic in venue.html) reads/writes slot data by id through here.
+  window.ImageSlotStore = { get: getSlot, set: setSlot };
+
   // ── Image downscale ─────────────────────────────────────────────────────
   // Encode through a canvas so the sidecar carries resized bytes, not the
   // raw upload. Longest side is capped at 2× the slot's rendered width

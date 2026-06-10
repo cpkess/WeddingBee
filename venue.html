@@ -122,9 +122,11 @@
         <a class="srcbtn" href="${pinSearch(term)}" target="_blank" rel="noopener">&#128204; Pinterest &nearr;</a>
         <a class="srcbtn" href="${gImages(term)}" target="_blank" rel="noopener">&#128269; Google Images &nearr;</a>
       </div>`;
-    function shotCellHTML(cat, id, caption, h){
+    const heights = [320,240,280,360,260];
+    function shotCellHTML(cat, id, caption, h, idx){
       return `<div class="cell">
           <button class="pinbtn" data-pin-id="${id}" data-venue="${v.id}" data-venue-name="${esc(v.name)}" data-cat="${esc(cat.title)}" data-caption="${esc(caption)}" aria-label="Pin to board">&#9825;</button>
+          <button class="delbtn" data-del-cat="${esc(cat.key)}" data-del-idx="${idx}" aria-label="Remove this empty slot" title="Remove this empty slot">&times;</button>
           <image-slot id="${id}" shape="rounded" radius="14" fit="cover" style="height:${h}px" placeholder="${esc(caption)}"></image-slot>
         </div>`;
     }
@@ -133,21 +135,21 @@
           <image-slot id="${id}" class="add-slot" shape="rounded" radius="14" fit="cover" style="height:${h}px" data-cat-key="${esc(cat.key)}" placeholder="+ Add a photo"></image-slot>
         </div>`;
     }
+    function masonryHTML(cat){
+      const shots = v.shots[cat.key] || (v.shots[cat.key]=[]);
+      let html = '';
+      shots.forEach((s,i)=>{
+        html += shotCellHTML(cat, `${v.id}-${cat.key}-${i}`, s, heights[i%heights.length], i);
+      });
+      html += addTileHTML(cat, `${v.id}-${cat.key}-${shots.length}`, heights[shots.length%heights.length]);
+      return html;
+    }
     (WED.galleryCats||[]).forEach(cat=>{
-      const shots = (v.shots && v.shots[cat.key]) || [];
       galHTML += `<div class="gal-cat" data-cat-key="${esc(cat.key)}">
         <div class="ghead"><span class="gn">${esc(cat.gn)}</span><h3>${esc(cat.title)}</h3>
           <a class="catsearch" href="${gImages(term+' '+cat.title)}" target="_blank" rel="noopener" title="Search images for ${esc(cat.title)}">&#128269; search this category &nearr;</a></div>
         <p class="gq">&ldquo;${esc(cat.q)}&rdquo;</p>
-        <div class="masonry">`;
-      shots.forEach((s,i)=>{
-        const id = `${v.id}-${cat.key}-${i}`;
-        const h = [320,240,280,360,260][i%5];
-        galHTML += shotCellHTML(cat, id, s, h);
-      });
-      const addId = `${v.id}-${cat.key}-${shots.length}`;
-      galHTML += addTileHTML(cat, addId, [320,240,280,360,260][shots.length%5]);
-      galHTML += `</div></div>`;
+        <div class="masonry">${masonryHTML(cat)}</div></div>`;
     });
     galHTML += `</div></section>`;
 
@@ -188,7 +190,6 @@
     });
 
     /* ---- on-page gallery photo adding ---- */
-    const heights = [320,240,280,360,260];
     let saveTimer;
     function scheduleSave(){
       clearTimeout(saveTimer);
@@ -215,14 +216,37 @@
       const cell = slotEl.closest('.cell');
       const masonry = cell.parentElement;
       const id = slotEl.id;
-      cell.insertAdjacentHTML('afterend', shotCellHTML(cat, id, '', heights[idx%heights.length]));
+      cell.insertAdjacentHTML('afterend', shotCellHTML(cat, id, '', heights[idx%heights.length], idx));
       cell.remove();
       const newAddId = `${v.id}-${catKey}-${shots.length}`;
       masonry.insertAdjacentHTML('beforeend', addTileHTML(cat, newAddId, heights[shots.length%heights.length]));
       rewire();
       scheduleSave();
     }
+    function deleteSlot(catKey, idx){
+      const cat = (WED.galleryCats||[]).find(c=>c.key===catKey);
+      const shots = v.shots[catKey] || [];
+      if(!cat || idx<0 || idx>=shots.length) return;
+      const store = window.ImageSlotStore;
+      if(store){
+        for(let j=idx+1;j<shots.length;j++){
+          const val = store.get(`${v.id}-${catKey}-${j}`);
+          store.set(`${v.id}-${catKey}-${j-1}`, val || null);
+        }
+        store.set(`${v.id}-${catKey}-${shots.length-1}`, null);
+      }
+      shots.splice(idx,1);
+      const masonry = document.querySelector(`.gal-cat[data-cat-key="${CSS.escape(catKey)}"] .masonry`);
+      if(masonry) masonry.innerHTML = masonryHTML(cat);
+      rewire();
+      scheduleSave();
+    }
     const main = document.getElementById('venuePage');
+    main.addEventListener('click', (e)=>{
+      const btn = e.target.closest && e.target.closest('.delbtn');
+      if(!btn) return;
+      deleteSlot(btn.dataset.delCat, parseInt(btn.dataset.delIdx,10));
+    });
     main.addEventListener('imageslot-fill', (e)=>{
       const el = e.target;
       if(el && el.classList && el.classList.contains('add-slot')) promote(el);
@@ -247,7 +271,7 @@
         const idx = startIdx+k;
         shots.push('');
         const id = `${v.id}-${catKey}-${idx}`;
-        masonry.insertAdjacentHTML('beforeend', shotCellHTML(cat, id, '', heights[idx%heights.length]));
+        masonry.insertAdjacentHTML('beforeend', shotCellHTML(cat, id, '', heights[idx%heights.length], idx));
       });
       const newAddId = `${v.id}-${catKey}-${shots.length}`;
       masonry.insertAdjacentHTML('beforeend', addTileHTML(cat, newAddId, heights[shots.length%heights.length]));
