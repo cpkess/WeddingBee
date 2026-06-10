@@ -3,7 +3,19 @@
     "allow": [
       "Bash(git init *)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(sed 's/__VID__/castle/g' pages/_venue.html)",
+      "Bash(sed 's/__VID__/beaches/g' pages/_venue.html)",
+      "Bash(sed 's/__VID__/hyatt/g' pages/_venue.html)",
+      "Bash(sed 's/__VID__/greatwolf/g' pages/_venue.html)",
+      "Bash(sed 's/__VID__/sandos/g' pages/_venue.html)",
+      "Bash(python3 -m http.server 8123)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8123/index.html)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8123/auth.js)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8123/data-store.js)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8123/supabase-config.js)",
+      "Bash(kill %1)",
+      "Bash(jobs)"
     ]
   }
 }

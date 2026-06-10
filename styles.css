@@ -80,6 +80,19 @@ button{font-family:inherit;cursor:pointer;}
   display:inline-flex;align-items:center;justify-content:center;font-size:12px;padding:0 6px;}
 .nav-toggle{display:none;}
 
+/* ---------------- auth ---------------- */
+.auth-area{display:flex;align-items:center;gap:8px;margin-left:10px;}
+.auth-chip{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:var(--ink);}
+.auth-avatar{width:26px;height:26px;border-radius:50%;display:block;}
+.auth-name{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.auth-btn{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:13.5px;
+  padding:9px 15px;border-radius:30px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink-soft);
+  transition:.16s;}
+.auth-btn:hover{border-color:var(--ink);color:var(--ink);}
+.auth-btn-fill{background:var(--accent-deep);border-color:var(--accent-deep);color:#fff;}
+.auth-btn-fill:hover{background:var(--ink);border-color:var(--ink);color:#fff;}
+@media(max-width:760px){.auth-area{margin-left:auto;}.auth-name{max-width:80px;}}
+
 /* ---------------- buttons ---------------- */
 .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:15px;
   padding:13px 24px;border-radius:34px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);

@@ -80,6 +80,22 @@
   const num = (v, d) => (Number.isFinite(v) ? v : d);
   const QS = (typeof location !== 'undefined' ? location.search : '') || '';
 
+  // Poll for window.WedAuth / window.WedStore — those are set up by ES
+  // module scripts (auth.js, data-store.js) which execute deferred, so they
+  // may not exist yet the instant this classic script runs.
+  function waitFor(check, timeout, interval) {
+    timeout = timeout || 5000; interval = interval || 50;
+    return new Promise((resolve) => {
+      const start = Date.now();
+      (function poll() {
+        const v = check();
+        if (v) return resolve(v);
+        if (Date.now() - start >= timeout) return resolve(null);
+        setTimeout(poll, interval);
+      })();
+    });
+  }
+
   // --- IndexedDB: dir handle (meta) + local fallback drops (slots) ---
   const DB_NAME = 'wed-image-slots';
   let dbP = null;
@@ -239,11 +255,17 @@
       .then((r) => (r.ok ? r.json() : null)).catch(() => null);
   }
 
+  // Shared family uploads, stored in Supabase (image_slots table + Storage).
+  function fetchSupabaseSlots() {
+    return waitFor(() => window.WedStore, 4000)
+      .then((store) => (store ? store.getImageSlots().catch(() => ({})) : {}));
+  }
+
   function load() {
     if (loadP) return loadP;
-    loadP = Promise.all([fetchManifest(), slotsAll(), fsRestore()])
+    loadP = Promise.all([fetchManifest(), slotsAll(), fsRestore(), fetchSupabaseSlots()])
       .then((res) => {
-        const man = res[0]; const stored = res[1] || {};
+        const man = res[0]; const stored = res[1] || {}; const supa = res[3] || {};
         manifest = (man && typeof man === 'object') ? man : {};
         const merged = {};
         // 1. committed files (shared via GitHub) — lowest precedence
@@ -251,9 +273,11 @@
           const m = manifest[k];
           if (m && m.f) merged[k] = { u: 'images/' + m.f + QS, s: num(m.s, 1), x: num(m.x, 0), y: num(m.y, 0) };
         }
-        // 2. local IndexedDB drops / tombstones (your not-yet-committed edits)
+        // 2. Supabase Storage (shared family uploads)
+        for (const k in supa) merged[k] = supa[k];
+        // 3. local IndexedDB drops / tombstones (your not-yet-committed edits)
         for (const k in stored) { const v = stored[k]; if (v && v.__del) delete merged[k]; else if (v) merged[k] = v; }
-        // 3. in-memory changes that raced ahead of this read win
+        // 4. in-memory changes that raced ahead of this read win
         for (const k in slots) merged[k] = slots[k];
         for (const id of tombstones) delete merged[id];
         slots = merged;
@@ -273,8 +297,22 @@
     return typeof v === 'string' ? { u: v, s: 1, x: 0, y: 0 } : v;
   }
 
-  // Write a newly-dropped image to disk (preferred) or IndexedDB (fallback).
+  // Write a newly-dropped image to Supabase Storage (preferred, shared with
+  // the family), then disk, then IndexedDB (fallback).
   async function writeDrop(id, val) {
+    const auth = await waitFor(() => window.WedAuth, 3000);
+    if (auth && auth.isSignedIn() && window.WedStore) {
+      try {
+        const blob = dataUrlToBlob(val.u);
+        const url = await window.WedStore.uploadImage(id, blob, extFor(blob.type));
+        const rec = { u: url, s: num(val.s, 1), x: num(val.x, 0), y: num(val.y, 0) };
+        await window.WedStore.setImageSlot(id, rec);
+        slots[id] = rec;
+        await slotsDel(id);          // drop any stale local copy
+        subs.forEach((fn) => fn());
+        return;
+      } catch (e) { /* fall through to local */ }
+    }
     if (FS.ready) {
       try {
         const blob = dataUrlToBlob(val.u);
@@ -297,6 +335,9 @@
         if (FS.ready) { fsDeleteImage(m.f); fsWriteManifest().catch(() => {}); }
         else slotsPut(id, { __del: 1 });   // hide locally until folder connected
       } else slotsDel(id);
+      waitFor(() => window.WedAuth, 3000).then((auth) => {
+        if (auth && auth.isSignedIn() && window.WedStore) window.WedStore.setImageSlot(id, null).catch(() => {});
+      });
       return;
     }
     // NEW IMAGE BYTES (data: URL from a drop/browse)
@@ -306,10 +347,17 @@
       manifest[id] = { f: manifest[id].f, s: num(val.s, 1), x: num(val.x, 0), y: num(val.y, 0) };
       if (FS.ready) fsWriteManifest().catch(() => {});
     } else {
-      slotsAll().then((all) => {
-        const cur = all && all[id];
-        if (cur && cur.u) slotsPut(id, { u: cur.u, s: num(val.s, 1), x: num(val.x, 0), y: num(val.y, 0) });
-      });
+      const cur = slots[id];
+      if (cur && cur.u) {
+        const rec = { u: cur.u, s: num(val.s, 1), x: num(val.x, 0), y: num(val.y, 0) };
+        if (/^https?:\/\//i.test(cur.u)) {
+          waitFor(() => window.WedAuth, 3000).then((auth) => {
+            if (auth && auth.isSignedIn() && window.WedStore) window.WedStore.setImageSlot(id, rec).catch(() => {});
+          });
+        } else {
+          slotsPut(id, rec);
+        }
+      }
     }
   }
 
@@ -785,7 +833,7 @@
       // paths (images/<file>, possibly with a ?token query in preview).
       let stored = this.id ? getSlot(this.id) : this._local;
       if (stored && stored.u && !/^data:image\//i.test(stored.u) &&
-          stored.u.indexOf('images/') !== 0) stored = null;
+          stored.u.indexOf('images/') !== 0 && !/^https?:\/\//i.test(stored.u)) stored = null;
       const srcAttr = this.getAttribute('src') || '';
       this._userUrl = (stored && stored.u) || null;
       const url = this._userUrl || srcAttr;

@@ -1,16 +1,25 @@
 /* =====================================================================
    Shared interactions: favorites, notes, board pins, mood filter, nav.
-   Plain vanilla JS. State in localStorage so it persists across pages.
+   Plain vanilla JS. State lives in Supabase (window.WedStore) and is
+   shared by the whole family — sign-in (window.WedAuth) is required to
+   write changes.
    ===================================================================== */
 (function(){
   "use strict";
-  const LS = {
-    fav:  (v)=>"wed:fav:"+v,
-    note: (v)=>"wed:note:"+v,
-    pins: "wed:pins",
-  };
-  const get = (k,d)=>{ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} };
-  const set = (k,v)=>{ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} };
+
+  /* ---------- wait for the auth/data modules to be ready ---------- */
+  function waitFor(check, timeout, interval){
+    timeout = timeout || 5000; interval = interval || 50;
+    return new Promise((resolve)=>{
+      const start = Date.now();
+      (function poll(){
+        const v = check();
+        if(v) return resolve(v);
+        if(Date.now()-start >= timeout) return resolve(null);
+        setTimeout(poll, interval);
+      })();
+    });
+  }
 
   /* ---------- toast ---------- */
   let toastWrap;
@@ -24,75 +33,120 @@
   }
   window.wedToast = toast;
 
-  /* ---------- pins ---------- */
-  function getPins(){ return get(LS.pins, []); }
-  function isPinned(id){ return getPins().some(p=>p.id===id); }
-  function togglePin(rec){
-    let pins=getPins();
-    const i=pins.findIndex(p=>p.id===rec.id);
-    if(i>=0){ pins.splice(i,1); set(LS.pins,pins); return false; }
-    pins.push(rec); set(LS.pins,pins); return true;
+  /* ---------- require sign-in for write actions ---------- */
+  function requireSignIn(msg){
+    const auth = window.WedAuth;
+    if(auth && auth.isSignedIn()) return true;
+    toast(msg || 'Sign in to make changes', '\u{1F510}');
+    if(auth) auth.signIn();
+    return false;
   }
-  window.wedPins = { get:getPins, isPinned, toggle:togglePin };
 
   /* ---------- nav ---------- */
-  function initNav(){
-    const cnt=document.querySelector('.nav-board .cnt');
-    if(cnt) cnt.textContent = getPins().length;
+  async function initNav(){
     const toggle=document.querySelector('.nav-toggle');
     const links=document.querySelector('.nav-links');
     if(toggle&&links){ toggle.addEventListener('click',()=>links.classList.toggle('open')); }
+    await refreshPinCount();
+  }
+
+  async function refreshPinCount(){
+    const cnt=document.querySelector('.nav-board .cnt');
+    if(!cnt) return;
+    const store = await waitFor(()=>window.WedStore);
+    if(!store) return;
+    const pins = await store.getPins();
+    cnt.textContent = pins.length;
   }
 
   /* ---------- favorite buttons ---------- */
-  function initFaves(){
+  async function initFaves(){
     const groups={};
     document.querySelectorAll('.fave[data-venue][data-state]').forEach(b=>{
       const v=b.dataset.venue; (groups[v]=groups[v]||[]).push(b);
     });
+    if(!Object.keys(groups).length) return;
+
+    const store = await waitFor(()=>window.WedStore);
+    if(!store) return;
+    const favorites = await store.getFavorites();
+
     Object.keys(groups).forEach(v=>{
-      const cur=get(LS.fav(v),null);
+      let cur = favorites[v] || null;
+      const paint=()=>groups[v].forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.state===cur)));
+      paint();
       groups[v].forEach(b=>{
-        b.setAttribute('aria-pressed', String(b.dataset.state===cur));
-        b.addEventListener('click',()=>{
-          const now=get(LS.fav(v),null);
-          const next = now===b.dataset.state ? null : b.dataset.state;
-          set(LS.fav(v),next);
-          groups[v].forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.state===next)));
-          if(next){
-            const m={love:['Love it!','\u2764\uFE0F'],maybe:['Filed under maybe','\u{1F914}'],info:['Noted \u2014 need more info','\u{1F50D}']}[next];
-            toast(m[0],m[1]);
-          }
+        b.addEventListener('click', async ()=>{
+          if(!requireSignIn('Sign in to vote on venues')) return;
+          const next = cur===b.dataset.state ? null : b.dataset.state;
+          try{
+            await store.setFavorite(v, next);
+            cur = next;
+            paint();
+            if(next){
+              const m={love:['Love it!','❤️'],maybe:['Filed under maybe','\u{1F914}'],info:['Noted — need more info','\u{1F50D}']}[next];
+              toast(m[0],m[1]);
+            }
+          }catch(e){ toast('Could not save — try again',''); }
         });
       });
     });
   }
 
   /* ---------- notes ---------- */
-  function initNotes(){
-    document.querySelectorAll('textarea[data-note-venue]').forEach(ta=>{
+  async function initNotes(){
+    const areas = document.querySelectorAll('textarea[data-note-venue]');
+    if(!areas.length) return;
+    const store = await waitFor(()=>window.WedStore);
+    if(!store) return;
+
+    areas.forEach(async (ta)=>{
       const v=ta.dataset.noteVenue;
-      ta.value=get(LS.note(v),"")||"";
       const saved=document.querySelector(`[data-note-saved="${v}"]`);
-      let t;
+      ta.value = await store.getNote(v);
+      let t, debounce;
       ta.addEventListener('input',()=>{
-        set(LS.note(v),ta.value);
-        if(saved){ saved.textContent="Saved \u2713"; clearTimeout(t); t=setTimeout(()=>saved.textContent="",1400); }
+        if(!requireSignIn('Sign in to add notes')){ return; }
+        clearTimeout(debounce);
+        debounce=setTimeout(async ()=>{
+          try{
+            await store.setNote(v, ta.value);
+            if(saved){ saved.textContent="Saved ✓"; clearTimeout(t); t=setTimeout(()=>saved.textContent="",1400); }
+          }catch(e){ toast('Could not save note',''); }
+        }, 500);
       });
     });
   }
 
   /* ---------- pin buttons (gallery) ---------- */
-  function initPinButtons(){
-    document.querySelectorAll('.pinbtn[data-pin-id]').forEach(b=>{
+  async function initPinButtons(){
+    const buttons = document.querySelectorAll('.pinbtn[data-pin-id]');
+    if(!buttons.length) return;
+    const store = await waitFor(()=>window.WedStore);
+    if(!store) return;
+    let pins = await store.getPins();
+    const isPinned=(id)=>pins.some(p=>p.id===id);
+
+    buttons.forEach(b=>{
       const id=b.dataset.pinId;
-      if(isPinned(id)){ b.classList.add('pinned'); b.innerHTML='\u2764'; }
-      b.addEventListener('click',()=>{
-        const on=togglePin({id, venue:b.dataset.venue, venueName:b.dataset.venueName, cat:b.dataset.cat, caption:b.dataset.caption});
-        b.classList.toggle('pinned',on);
-        b.innerHTML = on?'\u2764':'\u2661';
-        toast(on?'Pinned to your board':'Removed from board', on?'\u{1F4CC}':'');
-        const cnt=document.querySelector('.nav-board .cnt'); if(cnt) cnt.textContent=getPins().length;
+      if(isPinned(id)){ b.classList.add('pinned'); b.innerHTML='❤'; }
+      b.addEventListener('click', async ()=>{
+        if(!requireSignIn('Sign in to pin photos')) return;
+        const on = isPinned(id);
+        try{
+          if(on){
+            await store.removePin(id);
+            pins = pins.filter(p=>p.id!==id);
+          } else {
+            const rec={id, venue:b.dataset.venue, venueName:b.dataset.venueName, cat:b.dataset.cat, caption:b.dataset.caption};
+            await store.addPin(rec);
+            pins.push(rec);
+          }
+          b.classList.toggle('pinned', !on);
+          b.innerHTML = !on?'❤':'♡';
+          toast(!on?'Pinned to your board':'Removed from board', !on?'\u{1F4CC}':'');
+          const cnt=document.querySelector('.nav-board .cnt'); if(cnt) cnt.textContent=pins.length;
+        }catch(e){ toast('Could not save — try again',''); }
       });
     });
   }
