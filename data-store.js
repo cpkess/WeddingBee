@@ -175,10 +175,53 @@ async function deleteVenue(id) {
   if (error) throw error;
 }
 
+// ---------------- admin: approvals ----------------
+async function getAllProfiles() {
+  requireUser();
+  const [{ data: profiles, error: pErr }, { data: approvals, error: aErr }] = await Promise.all([
+    supabase.from('profiles').select('id, display_name, avatar_url, created_at'),
+    supabase.from('approved_users').select('id, is_admin, approved_at'),
+  ]);
+  if (pErr) { console.warn('[WedStore] getAllProfiles', pErr); return []; }
+  if (aErr) console.warn('[WedStore] getAllProfiles (approvals)', aErr);
+  const approvalById = {};
+  (approvals || []).forEach((a) => { approvalById[a.id] = a; });
+  return (profiles || []).map((p) => ({
+    id: p.id,
+    displayName: p.display_name,
+    avatarUrl: p.avatar_url,
+    createdAt: p.created_at,
+    approved: !!approvalById[p.id],
+    isAdmin: !!(approvalById[p.id] && approvalById[p.id].is_admin),
+    approvedAt: approvalById[p.id] && approvalById[p.id].approved_at,
+  }));
+}
+
+async function approveUser(id) {
+  const user = requireUser();
+  const { error } = await supabase.from('approved_users').upsert({
+    id, approved_by: user.id, approved_at: new Date().toISOString(),
+  });
+  if (error) throw error;
+}
+
+async function revokeUser(id) {
+  requireUser();
+  const { error } = await supabase.from('approved_users').delete().eq('id', id);
+  if (error) throw error;
+}
+
+async function setAdmin(id, isAdmin) {
+  requireUser();
+  const { error } = await supabase.from('approved_users').update({ is_admin: isAdmin }).eq('id', id);
+  if (error) throw error;
+}
+
 window.WedStore = {
   getFavorites, setFavorite,
   getNote, setNote,
   getPins, addPin, removePin,
   getImageSlots, uploadImage, setImageSlot,
   getVenues, upsertVenue, deleteVenue,
+  getAllProfiles, approveUser, revokeUser, setAdmin,
 };

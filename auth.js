@@ -50,6 +50,31 @@ async function signOut() {
   await supabase.auth.signOut();
 }
 
+let approvalCache = null; // null = unknown/stale, otherwise {id, is_admin}
+
+async function loadApproval() {
+  if (!currentUser) { approvalCache = { id: null, is_admin: false, approved: false }; return approvalCache; }
+  const { data } = await supabase
+    .from('approved_users')
+    .select('id, is_admin')
+    .eq('id', currentUser.id)
+    .maybeSingle();
+  approvalCache = { id: currentUser.id, is_admin: !!(data && data.is_admin), approved: !!data };
+  return approvalCache;
+}
+
+async function isApproved() {
+  if (!currentUser) return false;
+  if (!approvalCache || approvalCache.id !== currentUser.id) await loadApproval();
+  return approvalCache.approved;
+}
+
+async function isAdmin() {
+  if (!currentUser) return false;
+  if (!approvalCache || approvalCache.id !== currentUser.id) await loadApproval();
+  return approvalCache.is_admin;
+}
+
 async function init() {
   const { data: { session } } = await supabase.auth.getSession();
   currentUser = (session && session.user) || null;
@@ -59,6 +84,7 @@ async function init() {
 
   supabase.auth.onAuthStateChange((_event, session) => {
     currentUser = (session && session.user) || null;
+    approvalCache = null;
     renderNav();
     notify();
   });
@@ -77,6 +103,8 @@ window.WedAuth = {
   },
   signIn,
   signOut,
+  isApproved,
+  isAdmin,
 };
 
 if (document.readyState === 'loading') {

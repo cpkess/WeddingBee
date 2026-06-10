@@ -93,6 +93,22 @@ button{font-family:inherit;cursor:pointer;}
 .auth-btn-fill:hover{background:var(--ink);border-color:var(--ink);color:#fff;}
 @media(max-width:760px){.auth-area{margin-left:auto;}.auth-name{max-width:80px;}}
 
+/* ---------------- access gate ---------------- */
+#gateOverlay{display:none;}
+html:not(.gate-ok) body > *:not(#gateOverlay){display:none;}
+html:not(.gate-ok) #gateOverlay{
+  display:flex;align-items:center;justify-content:center;min-height:100vh;
+  padding:24px;background:var(--cream);
+}
+.gate-card{
+  max-width:420px;width:100%;text-align:center;background:var(--paper);
+  border:1px solid var(--line);border-radius:var(--r-lg);padding:40px 32px;
+  box-shadow:0 12px 40px rgba(16,53,55,.08);
+}
+.gate-card h1{margin:10px 0 14px;font-size:26px;}
+.gate-card p{margin:0 0 22px;color:var(--ink-soft);font-size:14.5px;line-height:1.6;}
+.gate-card .auth-btn{justify-content:center;width:100%;}
+
 /* ---------------- buttons ---------------- */
 .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:15px;
   padding:13px 24px;border-radius:34px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);
@@ -420,6 +436,17 @@ body.editing [data-editable="text"]:focus{outline-style:solid;background:rgba(25
 .empty{text-align:center;padding:80px 20px;color:var(--ink-soft);}
 .empty .em{font-size:54px;}
 .empty h3{font-family:var(--font-display);font-weight:800;font-size:26px;color:var(--ink);margin:14px 0 6px;}
+
+/* ---------------- admin page ---------------- */
+.admin-list{display:flex;flex-direction:column;gap:10px;}
+.admin-row{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px 18px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--paper);}
+.admin-person{display:flex;align-items:center;gap:10px;font-weight:700;}
+.admin-you{font-weight:600;color:var(--ink-soft);}
+.admin-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.admin-actions .auth-btn{cursor:pointer;}
+.admin-actions .auth-btn.is-on{background:var(--accent-tint);border-color:var(--accent);color:var(--accent-deep);}
+.admin-actions .auth-btn:disabled{opacity:.5;cursor:default;}
 
 /* verdict summary on board */
 .verdict{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:10px 0 36px;}

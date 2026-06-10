@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin — Gabrielle &amp; Kris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="admin">
+
+<div id="gateOverlay"></div>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="index.html">Gabrielle <span class="amp">&amp;</span> Kris<span class="dot"></span></a>
+    <button class="nav-toggle" aria-label="Menu">&#9776;</button>
+    <nav class="nav-links">
+      <a href="index.html#timeline">Timeline</a>
+      <a href="index.html#venues">Venues</a>
+      <a href="showdown.html">Showdown</a>
+      <a class="nav-board" href="board.html">&#9829; My Board <span class="cnt">0</span></a>
+      <a href="admin.html" class="nav-admin active" style="display:none">Admin</a>
+    </nav>
+    <div class="auth-area"></div>
+  </div>
+</header>
+
+<section class="bd-hero"><div class="wrap">
+  <span class="kicker" style="--accent-deep:var(--coral-deep)">Family access</span>
+  <h1>Approve &amp; manage family members</h1>
+  <p>Approve new sign-ins so they can see and edit the shared site, and grant admin access to anyone you trust to do the same.</p>
+</div></section>
+
+<section class="venues" style="padding-top:10px"><div class="wrap">
+  <div id="adminBody"></div>
+</div></section>
+
+<footer class="foot">
+  <div class="wrap">
+    <a class="brand" href="index.html">Gabrielle <span class="amp">&amp;</span> Kris<span class="dot"></span></a>
+    <span><a href="index.html#venues">Venues</a> &middot; <a href="showdown.html">Showdown</a></span>
+    <small>Pinned with love &middot; August&ndash;December 2028</small>
+  </div>
+</footer>
+
+<script type="module" src="supabase-config.js"></script>
+<script type="module" src="auth.js"></script>
+<script type="module" src="gate.js"></script>
+<script type="module" src="data-store.js"></script>
+<script>
+(function(){
+  function waitFor(check, timeout, interval){
+    timeout = timeout || 5000; interval = interval || 50;
+    return new Promise((resolve)=>{
+      const start = Date.now();
+      (function poll(){
+        const v = check();
+        if(v) return resolve(v);
+        if(Date.now()-start >= timeout) return resolve(null);
+        setTimeout(poll, interval);
+      })();
+    });
+  }
+
+  const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+
+  async function renderAdmin(auth, store){
+    const body = document.getElementById('adminBody');
+    const admin = await auth.isAdmin();
+    if(!admin){
+      body.innerHTML = `<div class="empty"><div class="em">&#128274;</div><h3>Admins only</h3>
+        <p>Your account doesn&rsquo;t have admin access. If you think that&rsquo;s a mistake, ask an existing admin to promote you from this page.</p></div>`;
+      return;
+    }
+
+    const me = auth.getUser();
+    let people = await store.getAllProfiles();
+    people = people.slice().sort((a,b)=>{
+      if(a.approved !== b.approved) return a.approved ? 1 : -1;
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    });
+
+    body.innerHTML = `<div class="sec-head" style="margin-bottom:18px"><div>
+        <span class="kicker">${people.length} ${people.length===1?'person':'people'}</span>
+        <h2 style="font-family:var(--font-display);font-weight:800;font-size:clamp(26px,3.4vw,40px);letter-spacing:-.02em;margin:.25em 0 0;line-height:1">Family members</h2>
+      </div></div>
+      <div class="admin-list">` + people.map(p=>{
+        const name = p.displayName || 'Unnamed';
+        const isMe = p.id === me.id;
+        return `<div class="admin-row" data-id="${esc(p.id)}">
+          <span class="admin-person">
+            ${p.avatarUrl ? `<img class="auth-avatar" src="${esc(p.avatarUrl)}" alt="">` : ''}
+            <span class="admin-name">${esc(name)}${isMe ? ' <span class="admin-you">(you)</span>' : ''}</span>
+          </span>
+          <span class="admin-actions">
+            <button class="auth-btn admin-toggle-approved ${p.approved?'is-on':''}" data-action="approved">${p.approved ? 'Approved ✓' : 'Approve'}</button>
+            <button class="auth-btn admin-toggle-admin ${p.isAdmin?'is-on':''}" data-action="admin" ${isMe?'disabled':''}>${p.isAdmin ? 'Admin ✓' : 'Make admin'}</button>
+          </span>
+        </div>`;
+      }).join('') + `</div>`;
+
+    body.querySelectorAll('.admin-row').forEach(row=>{
+      const id = row.dataset.id;
+      row.querySelector('[data-action="approved"]').addEventListener('click', async (e)=>{
+        const btn = e.currentTarget;
+        const approved = btn.classList.contains('is-on');
+        btn.disabled = true;
+        try{
+          if(approved) await store.revokeUser(id); else await store.approveUser(id);
+          renderAdmin(auth, store);
+        }catch(err){
+          if(window.wedToast) window.wedToast('Could not update — try again','');
+          btn.disabled = false;
+        }
+      });
+      const adminBtn = row.querySelector('[data-action="admin"]');
+      adminBtn.addEventListener('click', async (e)=>{
+        const btn = e.currentTarget;
+        const isAdminNow = btn.classList.contains('is-on');
+        btn.disabled = true;
+        try{
+          await store.setAdmin(id, !isAdminNow);
+          renderAdmin(auth, store);
+        }catch(err){
+          if(window.wedToast) window.wedToast('Could not update — try again','');
+          btn.disabled = false;
+        }
+      });
+    });
+  }
+
+  (async ()=>{
+    const auth = await waitFor(()=>window.WedAuth);
+    const store = await waitFor(()=>window.WedStore);
+    if(!auth || !store) return;
+    auth.onChange(async (user)=>{
+      if(!user) return;
+      const approved = await auth.isApproved();
+      if(approved) renderAdmin(auth, store);
+    });
+  })();
+})();
+</script>
+<script src="app.js"></script>
+</body>
+</html>
