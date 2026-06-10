@@ -114,7 +114,7 @@
 
     /* gallery */
     let galHTML = `<section class="gal"><div class="wrap">
-      <div class="sec-head"><div><span class="kicker">The galleries</span><h2 class="sec-title" style="font-family:var(--font-display);font-weight:800;font-size:clamp(30px,4.4vw,52px);letter-spacing:-.02em;margin:.25em 0 0;line-height:1">What it feels like to marry here</h2></div><p>Every frame is a drop-zone. Hit <strong>&#128269; Find photos</strong> on any frame, then drag a picture you love straight onto it &mdash; even from another browser tab. Already filled? <strong>Hover it for Replace / Remove.</strong> Tap the <strong>&#9825;</strong> to pin it to your board.</p></div>
+      <div class="sec-head"><div><span class="kicker">The galleries</span><h2 class="sec-title" style="font-family:var(--font-display);font-weight:800;font-size:clamp(30px,4.4vw,52px);letter-spacing:-.02em;margin:.25em 0 0;line-height:1">What it feels like to marry here</h2></div><p>Every frame is a drop-zone &mdash; drag a picture you love straight onto it, even from another browser tab. Already filled? <strong>Hover it for Replace / Remove.</strong> Tap the <strong>&#9825;</strong> to pin it to your board.</p></div>
       <div class="srcbar">
         <span class="srclabel">&#128247; Find ${esc(v.name)} photos:</span>
         ${sources.site?`<a class="srcbtn" href="${esc(sources.site)}" target="_blank" rel="noopener">&#127760; Official site &nearr;</a>`:''}
@@ -123,10 +123,7 @@
         <a class="srcbtn" href="${gImages(term)}" target="_blank" rel="noopener">&#128269; Google Images &nearr;</a>
       </div>`;
     function shotCellHTML(cat, id, caption, h){
-      const findTerm = caption ? (term+' '+caption) : term;
-      const findTitle = caption ? `Find a photo: ${esc(caption)}` : 'Find photos';
       return `<div class="cell">
-          <a class="findbtn" href="${gImages(findTerm)}" target="_blank" rel="noopener" title="${findTitle}">&#128269;<span>Find photos</span></a>
           <button class="pinbtn" data-pin-id="${id}" data-venue="${v.id}" data-venue-name="${esc(v.name)}" data-cat="${esc(cat.title)}" data-caption="${esc(caption)}" aria-label="Pin to board">&#9825;</button>
           <image-slot id="${id}" shape="rounded" radius="14" fit="cover" style="height:${h}px" placeholder="${esc(caption)}"></image-slot>
         </div>`;

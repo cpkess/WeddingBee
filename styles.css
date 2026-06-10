@@ -333,14 +333,6 @@ button{font-family:inherit;cursor:pointer;}
 .catsearch{margin-left:auto;font-weight:700;font-size:12.5px;color:var(--accent-deep);opacity:.85;white-space:nowrap;}
 .catsearch:hover{opacity:1;text-decoration:underline;}
 
-/* per-slot find button */
-.cell .findbtn{position:absolute;top:10px;left:10px;z-index:5;display:inline-flex;align-items:center;gap:6px;
-  height:38px;padding:0 13px;border-radius:30px;background:rgba(16,53,55,.62);backdrop-filter:blur(5px);
-  color:#fff;font-size:13px;font-weight:700;box-shadow:var(--shadow-sm);transition:.16s;}
-.cell .findbtn span{max-width:0;overflow:hidden;white-space:nowrap;opacity:0;transition:.18s;}
-.cell:hover .findbtn span{max-width:90px;opacity:1;}
-.cell .findbtn:hover{background:var(--accent-deep);}
-
 /* "+ add a photo" tile at the end of each gallery */
 .cell-add image-slot::part(frame){background:transparent;border:2px dashed var(--line);transition:.16s;}
 .cell-add image-slot::part(empty){color:var(--ink-soft);transition:.16s;}
