@@ -517,6 +517,7 @@
           this._gen++;
           this._local = null;
           if (this.id) setSlot(this.id, null); else this._render();
+          this.dispatchEvent(new CustomEvent('imageslot-clear', { bubbles: true, composed: true, detail: { id: this.id } }));
         }
       });
       this._input.addEventListener('change', () => {

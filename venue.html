@@ -126,8 +126,7 @@
     function shotCellHTML(cat, id, caption, h, idx){
       return `<div class="cell">
           <button class="pinbtn" data-pin-id="${id}" data-venue="${v.id}" data-venue-name="${esc(v.name)}" data-cat="${esc(cat.title)}" data-caption="${esc(caption)}" aria-label="Pin to board">&#9825;</button>
-          <button class="delbtn" data-del-cat="${esc(cat.key)}" data-del-idx="${idx}" aria-label="Remove this empty slot" title="Remove this empty slot">&times;</button>
-          <image-slot id="${id}" shape="rounded" radius="14" fit="cover" style="height:${h}px" placeholder="${esc(caption)}"></image-slot>
+          <image-slot id="${id}" shape="rounded" radius="14" fit="cover" style="height:${h}px" placeholder="${esc(caption)}" data-cat-key="${esc(cat.key)}" data-idx="${idx}"></image-slot>
         </div>`;
     }
     function addTileHTML(cat, id, h){
@@ -246,14 +245,15 @@
       scheduleSave();
     }
     const main = document.getElementById('venuePage');
-    main.addEventListener('click', (e)=>{
-      const btn = e.target.closest && e.target.closest('.delbtn');
-      if(!btn) return;
-      deleteSlot(btn.dataset.delCat, parseInt(btn.dataset.delIdx,10));
-    });
     main.addEventListener('imageslot-fill', (e)=>{
       const el = e.target;
       if(el && el.classList && el.classList.contains('add-slot')) promote(el);
+    });
+    main.addEventListener('imageslot-clear', (e)=>{
+      const el = e.target;
+      if(el && el.dataset && el.dataset.idx !== undefined){
+        deleteSlot(el.dataset.catKey, parseInt(el.dataset.idx,10));
+      }
     });
     main.addEventListener('drop', (e)=>{
       const slot = e.target && e.target.closest && e.target.closest('.add-slot');
