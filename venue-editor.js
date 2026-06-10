@@ -129,7 +129,6 @@
       v.id = uniqueId(slugify(v.name), existingVenues);
       v.slug = v.id;
       v.orderIndex = existingVenues.reduce((m,x)=>Math.max(m, x.orderIndex||0), 0) + 1;
-      v.num = `Venue ${String(existingVenues.length+1).padStart(2,'0')}`;
     }
     return v;
   }

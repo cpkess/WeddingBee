@@ -151,7 +151,6 @@
       card.style.setProperty('--vc-deep',v.vcDeep);
       card.innerHTML=`
         <a class="vmedia" href="venue.html?v=${encodeURIComponent(v.id)}" aria-label="${v.name}">
-          <span class="vnum">${v.num}</span>
           <image-slot id="${v.id}-hero" shape="rect" fit="cover" placeholder="Drop a hero photo of ${v.name}"></image-slot>
         </a>
         <div class="vbody">

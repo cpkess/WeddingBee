@@ -264,9 +264,6 @@ button{font-family:inherit;cursor:pointer;}
 .vcard.feat .vmedia{flex:1 1 56%;min-height:430px;}
 .vcard .vbody{padding:26px 28px 28px;display:flex;flex-direction:column;gap:13px;}
 .vcard.feat .vbody{flex:1 1 44%;justify-content:center;padding:40px;}
-.vcard .vnum{position:absolute;top:16px;left:18px;z-index:3;font-family:var(--font-display);font-weight:800;
-  font-size:14px;letter-spacing:.1em;color:#fff;background:rgba(16,53,55,.5);backdrop-filter:blur(4px);
-  padding:5px 12px;border-radius:30px;}
 .vcard .theme{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:var(--vc-deep,var(--sea-deep));}
 .vcard .theme .sq{width:10px;height:10px;border-radius:3px;background:var(--vc,var(--sea));}
 .vcard h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;line-height:.96;margin:0;
