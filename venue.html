@@ -138,8 +138,12 @@
     function masonryHTML(cat){
       const shots = v.shots[cat.key] || (v.shots[cat.key]=[]);
       let html = '';
-      shots.forEach((s,i)=>{
-        html += shotCellHTML(cat, `${v.id}-${cat.key}-${i}`, s, heights[i%heights.length], i);
+      const store = window.ImageSlotStore;
+      shots.forEach((_,i)=>{
+        const id = `${v.id}-${cat.key}-${i}`;
+        const stored = store && store.get(id);
+        if(!stored || !stored.u) return;
+        html += shotCellHTML(cat, id, '', heights[i%heights.length], i);
       });
       html += addTileHTML(cat, `${v.id}-${cat.key}-${shots.length}`, heights[shots.length%heights.length]);
       return html;
@@ -294,6 +298,8 @@
   (async ()=>{
     const store = await waitFor(()=>window.WedStore);
     const WED_ready = await waitFor(()=>window.WED);
+    const imgStore = await waitFor(()=>window.ImageSlotStore);
+    if(imgStore && imgStore.ready) await imgStore.ready;
     if(!store || !WED_ready){
       document.getElementById('venuePage').innerHTML = '<div class="wrap" style="padding:80px 0">Could not load venue data.</div>';
       return;

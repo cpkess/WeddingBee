@@ -374,8 +374,10 @@
   }
 
   // Page-level UI (e.g. the gallery's "remove this empty slot" / re-index
-  // logic in venue.html) reads/writes slot data by id through here.
-  window.ImageSlotStore = { get: getSlot, set: setSlot };
+  // logic, and filtering empty cells before first paint, in venue.html)
+  // reads/writes slot data by id through here. `ready` resolves once the
+  // initial load (Supabase + local) has merged into `slots`.
+  window.ImageSlotStore = { get: getSlot, set: setSlot, ready: load() };
 
   // ── Image downscale ─────────────────────────────────────────────────────
   // Encode through a canvas so the sidecar carries resized bytes, not the
