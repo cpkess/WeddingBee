@@ -311,7 +311,11 @@
         await slotsDel(id);          // drop any stale local copy
         subs.forEach((fn) => fn());
         return;
-      } catch (e) { /* fall through to local */ }
+      } catch (e) {
+        console.warn('[image-slot] shared upload failed, saving locally only', e);
+        if (window.wedToast) window.wedToast('Could not save to the shared gallery — only visible on this device', '');
+        /* fall through to local */
+      }
     }
     if (FS.ready) {
       try {
