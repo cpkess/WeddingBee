@@ -102,6 +102,7 @@
 <script type="module" src="data-store.js"></script>
 <script src="image-slot.js"></script>
 <script src="data.js"></script>
+<script src="venue-editor.js"></script>
 <script>
 /* ---- build timeline ---- */
 (function(){
@@ -123,35 +124,78 @@
 
 /* ---- build venue grid ---- */
 (function(){
-  const g=document.getElementById('vgrid');
-  WED.venues.forEach((v,idx)=>{
-    const feat = idx===0;
-    const card=document.createElement('article');
-    card.className='vcard'+(feat?' feat':'');
-    card.style.setProperty('--vc',v.vc);
-    card.style.setProperty('--vc-deep',v.vcDeep);
-    card.innerHTML=`
-      <a class="vmedia" href="${v.slug}.html" aria-label="${v.name}">
-        <span class="vnum">${v.num}</span>
-        <image-slot id="${v.id}-hero" shape="rect" fit="cover" placeholder="Drop a hero photo of ${v.name}"></image-slot>
-      </a>
-      <div class="vbody">
-        <span class="theme"><span class="sq"></span>${v.theme}</span>
-        <h3>${v.name}</h3>
-        <div class="vloc">${v.location}</div>
-        <p class="vline">${v.oneLiner}</p>
-        <div class="tags">${v.moods.map(m=>`<span class="tag" style="background:color-mix(in srgb, ${v.vc} 16%, white);color:${v.vcDeep}">${m}</span>`).join('')}</div>
-        <div class="faves">
-          <button class="fave" data-venue="${v.id}" data-state="love" aria-pressed="false"><span class="ic">&#9829;</span>Love it</button>
-          <button class="fave" data-venue="${v.id}" data-state="maybe" aria-pressed="false"><span class="ic">&#128077;</span>Maybe</button>
-          <button class="fave" data-venue="${v.id}" data-state="info" aria-pressed="false"><span class="ic">&#128269;</span>More info</button>
-        </div>
-        <div class="vfoot">
-          <a class="explore" href="${v.slug}.html">Explore ${v.name.split(' ')[0]} <span class="arr">&rarr;</span></a>
-        </div>
-      </div>`;
-    g.appendChild(card);
-  });
+  function waitFor(check, timeout, interval){
+    timeout = timeout || 5000; interval = interval || 50;
+    return new Promise((resolve)=>{
+      const start = Date.now();
+      (function poll(){
+        const v = check();
+        if(v) return resolve(v);
+        if(Date.now()-start >= timeout) return resolve(null);
+        setTimeout(poll, interval);
+      })();
+    });
+  }
+
+  async function render(){
+    const store = await waitFor(()=>window.WedStore);
+    if(!store) return;
+    const venues = await store.getVenues();
+    const g=document.getElementById('vgrid');
+    g.innerHTML = '';
+    venues.forEach((v,idx)=>{
+      const feat = idx===0;
+      const card=document.createElement('article');
+      card.className='vcard'+(feat?' feat':'');
+      card.style.setProperty('--vc',v.vc);
+      card.style.setProperty('--vc-deep',v.vcDeep);
+      card.innerHTML=`
+        <a class="vmedia" href="venue.html?v=${encodeURIComponent(v.id)}" aria-label="${v.name}">
+          <span class="vnum">${v.num}</span>
+          <image-slot id="${v.id}-hero" shape="rect" fit="cover" placeholder="Drop a hero photo of ${v.name}"></image-slot>
+        </a>
+        <div class="vbody">
+          <span class="theme"><span class="sq"></span>${v.theme}</span>
+          <h3>${v.name}</h3>
+          <div class="vloc">${v.location}</div>
+          <p class="vline">${v.oneLiner}</p>
+          <div class="tags">${(v.moods||[]).map(m=>`<span class="tag" style="background:color-mix(in srgb, ${v.vc} 16%, white);color:${v.vcDeep}">${m}</span>`).join('')}</div>
+          <div class="faves">
+            <button class="fave" data-venue="${v.id}" data-state="love" aria-pressed="false"><span class="ic">&#9829;</span>Love it</button>
+            <button class="fave" data-venue="${v.id}" data-state="maybe" aria-pressed="false"><span class="ic">&#128077;</span>Maybe</button>
+            <button class="fave" data-venue="${v.id}" data-state="info" aria-pressed="false"><span class="ic">&#128269;</span>More info</button>
+            <button class="vedit" data-act="edit-venue" data-id="${v.id}">&#9998; Edit</button>
+          </div>
+          <div class="vfoot">
+            <a class="explore" href="venue.html?v=${encodeURIComponent(v.id)}">Explore ${v.name.split(' ')[0]} <span class="arr">&rarr;</span></a>
+          </div>
+        </div>`;
+      g.appendChild(card);
+    });
+
+    /* "Add a venue" card */
+    const addCard=document.createElement('article');
+    addCard.className='vcard vcard-add';
+    addCard.innerHTML=`<button class="plus" data-act="add-venue"><span class="ic">+</span><span>Add a venue</span></button>`;
+    g.appendChild(addCard);
+
+    /* wire edit buttons */
+    g.querySelectorAll('[data-act="edit-venue"]').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        const venue = venues.find(x=>x.id===btn.dataset.id);
+        if(!venue) return;
+        window.WedVenueEditor.openEdit(venue, ()=>render());
+      });
+    });
+    g.querySelector('[data-act="add-venue"]').addEventListener('click', ()=>{
+      window.WedVenueEditor.openCreate(()=>render());
+    });
+
+    const app = await waitFor(()=>window.WedApp);
+    if(app){ app.initFaves(); }
+  }
+  render();
 })();
 
 /* ---- confetti specks on CTA ---- */

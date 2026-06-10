@@ -217,6 +217,14 @@
     FS.onChange(render);
   }
 
+  // Re-runnable wiring for dynamically-rendered content (venue grid, venue
+  // page, showdown rows are built async from Supabase, after
+  // DOMContentLoaded has already fired).
+  window.WedApp = {
+    waitFor, toast, requireSignIn,
+    initFaves, initNotes, initPinButtons, initMoodFilter, refreshPinCount,
+  };
+
   document.addEventListener('DOMContentLoaded',()=>{
     patchLinks(); initNav(); initFaves(); initNotes(); initPinButtons(); initMoodFilter(); initFolderBar();
   });

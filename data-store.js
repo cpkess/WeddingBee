@@ -129,9 +129,56 @@ async function setImageSlot(id, val) {
   if (error) throw error;
 }
 
+// ---------------- venues (shared, family-editable) ----------------
+function rowToVenue(r) {
+  return {
+    id: r.id, slug: r.slug, num: r.num,
+    name: r.name, location: r.location, theme: r.theme,
+    vc: r.vc, vcDeep: r.vc_deep,
+    searchTerm: r.search_term,
+    sources: { site: r.site_url, siteLabel: r.site_label, ig: r.ig_url, igLabel: r.ig_label },
+    oneLiner: r.one_liner, lead: r.lead, why: r.why, note: r.note,
+    moods: r.moods || [], included: r.included || [], shots: r.shots || {},
+    orderIndex: r.order_index == null ? 0 : r.order_index,
+  };
+}
+
+async function getVenues() {
+  const { data, error } = await supabase.from('venues').select('*').order('order_index', { ascending: true });
+  if (error) { console.warn('[WedStore] getVenues', error); return []; }
+  return (data || []).map(rowToVenue);
+}
+
+async function upsertVenue(v) {
+  const user = requireUser();
+  const sources = v.sources || {};
+  const row = {
+    id: v.id, slug: v.slug, num: v.num || null,
+    name: v.name, location: v.location || null, theme: v.theme || null,
+    vc: v.vc || null, vc_deep: v.vcDeep || null,
+    search_term: v.searchTerm || null,
+    site_url: sources.site || null, site_label: sources.siteLabel || null,
+    ig_url: sources.ig || null, ig_label: sources.igLabel || null,
+    one_liner: v.oneLiner || null, lead: v.lead || null, why: v.why || null, note: v.note || null,
+    moods: v.moods || [], included: v.included || [], shots: v.shots || {},
+    order_index: v.orderIndex == null ? 0 : v.orderIndex,
+    created_by: user.id,
+    updated_at: new Date().toISOString(),
+  };
+  const { error } = await supabase.from('venues').upsert(row);
+  if (error) throw error;
+}
+
+async function deleteVenue(id) {
+  requireUser();
+  const { error } = await supabase.from('venues').delete().eq('id', id);
+  if (error) throw error;
+}
+
 window.WedStore = {
   getFavorites, setFavorite,
   getNote, setNote,
   getPins, addPin, removePin,
   getImageSlots, uploadImage, setImageSlot,
+  getVenues, upsertVenue, deleteVenue,
 };

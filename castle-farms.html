@@ -2,152 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Venue — Gabrielle &amp; Kris</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="styles.css" />
-</head>
-<body data-venue="castle" data-venue-id="castle" data-page="venue">
-
-<header class="nav">
-  <div class="wrap nav-in">
-    <a class="brand" href="index.html">Gabrielle <span class="amp">&amp;</span> Kris<span class="dot"></span></a>
-    <button class="nav-toggle" aria-label="Menu">&#9776;</button>
-    <nav class="nav-links">
-      <a href="index.html#timeline">Timeline</a>
-      <a href="index.html#venues">Venues</a>
-      <a href="showdown.html">Showdown</a>
-      <a class="nav-board" href="board.html">&#9829; My Board <span class="cnt">0</span></a>
-    </nav>
-    <div class="auth-area"></div>
-  </div>
-</header>
-
-<main id="venuePage"></main>
-
-<footer class="foot">
-  <div class="wrap">
-    <a class="brand" href="index.html">Gabrielle <span class="amp">&amp;</span> Kris<span class="dot"></span></a>
-    <span><a href="index.html#venues">All venues</a> &middot; <a href="showdown.html">Showdown</a> &middot; <a href="board.html">My Board</a></span>
-    <small>A wedding daydream &middot; August&ndash;December 2028</small>
-  </div>
-</footer>
-
-<script type="module" src="supabase-config.js"></script>
-<script type="module" src="auth.js"></script>
-<script type="module" src="data-store.js"></script>
-<script src="image-slot.js"></script>
-<script src="data.js"></script>
+<meta http-equiv="refresh" content="0; url=venue.html?v=castle" />
+<title>Redirecting…</title>
 <script>
 (function(){
-  const VID = document.body.dataset.venueId;
-  const v = WED.venues.find(x=>x.id===VID);
-  if(!v){ document.getElementById('venuePage').innerHTML='<div class="wrap" style="padding:80px 0">Venue not found.</div>'; return; }
-  document.title = v.name + " — Gabrielle & Kris";
-  const idx = WED.venues.findIndex(x=>x.id===VID);
-  const prev = WED.venues[(idx-1+WED.venues.length)%WED.venues.length];
-  const next = WED.venues[(idx+1)%WED.venues.length];
-  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
-  const enc = s => encodeURIComponent(s);
-  const gImages = q => `https://www.google.com/search?tbm=isch&q=${enc(q)}`;
-  const pinSearch = q => `https://www.pinterest.com/search/pins/?q=${enc(q)}`;
-  const term = v.searchTerm || (v.name+" wedding");
-
-  /* hero */
-  const heroHTML = `
-  <section class="vhero"><div class="wrap">
-    <div class="top">
-      <a class="back" href="index.html#venues">&larr; All venues</a>
-      <div class="faves">
-        <button class="fave" data-venue="${v.id}" data-state="love" aria-pressed="false"><span class="ic">&#9829;</span>Love it</button>
-        <button class="fave" data-venue="${v.id}" data-state="maybe" aria-pressed="false"><span class="ic">&#128077;</span>Maybe</button>
-        <button class="fave" data-venue="${v.id}" data-state="info" aria-pressed="false"><span class="ic">&#128269;</span>More info</button>
-      </div>
-    </div>
-    <div class="sub">
-      <span class="kicker">${v.num}</span>
-      <span class="theme"><span class="sq"></span>${v.theme}</span>
-      <span>&#9679; ${v.location}</span>
-    </div>
-    <h1>${v.name}</h1>
-    <div class="vhero-media">
-      <image-slot id="${v.id}-hero" shape="rect" fit="cover" placeholder="Drop your hero photo of ${esc(v.name)}"></image-slot>
-    </div>
-  </div></section>`;
-
-  /* intro */
-  const introHTML = `
-  <section class="vhero"><div class="wrap"><div class="vintro">
-    <div>
-      <p class="lead">${v.lead}</p>
-      <span class="note hand">${v.note}</span>
-    </div>
-    <div class="why">
-      <h4>Why it&rsquo;s interesting</h4>
-      <p>${v.why}</p>
-      <div class="tags" style="margin-top:16px">${v.moods.map(m=>`<span class="tag">${m}</span>`).join('')}</div>
-    </div>
-  </div></div></section>`;
-
-  /* gallery */
-  let galHTML = `<section class="gal"><div class="wrap">
-    <div class="sec-head"><div><span class="kicker">The galleries</span><h2 class="sec-title" style="font-family:var(--font-display);font-weight:800;font-size:clamp(30px,4.4vw,52px);letter-spacing:-.02em;margin:.25em 0 0;line-height:1">What it feels like to marry here</h2></div><p>Every frame is a drop-zone. Hit <strong>&#128269; Find photos</strong> on any frame, then drag a picture you love straight onto it &mdash; even from another browser tab. Already filled? <strong>Hover it for Replace / Remove.</strong> Tap the <strong>&#9825;</strong> to pin it to your board.</p></div>
-    <div class="srcbar">
-      <span class="srclabel">&#128247; Find ${esc(v.name)} photos:</span>
-      ${v.sources&&v.sources.site?`<a class="srcbtn" href="${v.sources.site}" target="_blank" rel="noopener">&#127760; Official site &nearr;</a>`:''}
-      ${v.sources&&v.sources.ig?`<a class="srcbtn" href="${v.sources.ig}" target="_blank" rel="noopener">&#128248; Instagram ${v.sources.igLabel?`<span class="muted">${esc(v.sources.igLabel)}</span>`:''} &nearr;</a>`:''}
-      <a class="srcbtn" href="${pinSearch(term)}" target="_blank" rel="noopener">&#128204; Pinterest &nearr;</a>
-      <a class="srcbtn" href="${gImages(term)}" target="_blank" rel="noopener">&#128269; Google Images &nearr;</a>
-    </div>`;
-  WED.galleryCats.forEach(cat=>{
-    const shots = (v.shots[cat.key]||[]);
-    galHTML += `<div class="gal-cat">
-      <div class="ghead"><span class="gn">${cat.gn}</span><h3>${cat.title}</h3>
-        <a class="catsearch" href="${gImages(term+' '+cat.title)}" target="_blank" rel="noopener" title="Search images for ${esc(cat.title)}">&#128269; search this category &nearr;</a></div>
-      <p class="gq">&ldquo;${cat.q}&rdquo;</p>
-      <div class="masonry">`;
-    shots.forEach((s,i)=>{
-      const id = `${v.id}-${cat.key}-${i}`;
-      // vary heights for masonry rhythm
-      const h = [320,240,280,360,260][i%5];
-      galHTML += `<div class="cell">
-        <a class="findbtn" href="${gImages(term+' '+s)}" target="_blank" rel="noopener" title="Find a photo: ${esc(s)}">&#128269;<span>Find photos</span></a>
-        <button class="pinbtn" data-pin-id="${id}" data-venue="${v.id}" data-venue-name="${esc(v.name)}" data-cat="${esc(cat.title)}" data-caption="${esc(s)}" aria-label="Pin to board">&#9825;</button>
-        <image-slot id="${id}" shape="rounded" radius="14" fit="cover" style="height:${h}px" placeholder="${esc(s)}"></image-slot>
-      </div>`;
-    });
-    galHTML += `</div></div>`;
-  });
-  galHTML += `</div></section>`;
-
-  /* included */
-  let inclHTML = `<section class="incl"><div class="wrap">
-    <div class="sec-head"><div><span class="kicker">The practical magic</span><h2 style="font-family:var(--font-display);font-weight:800;font-size:clamp(30px,4.4vw,52px);letter-spacing:-.02em;margin:.25em 0 0;line-height:1">What&rsquo;s included</h2></div><p>The good stuff this venue brings to the table &mdash; researched, not guessed.</p></div>
-    <div class="incl-grid">`;
-  v.included.forEach(c=>{
-    inclHTML += `<div class="incl-card"><div class="ic">${c.ic}</div><h4>${c.title}</h4><p>${c.desc}</p></div>`;
-  });
-  inclHTML += `</div></div></section>`;
-
-  /* notes */
-  const notesHTML = `<section class="notes"><div class="wrap"><div class="box">
-    <h3>Notes on ${v.name}</h3>
-    <p class="prompt">What stands out to you about this venue? (Saved automatically, just for the two of you.)</p>
-    <textarea data-note-venue="${v.id}" placeholder="e.g. love the sunset ceremony spot... but how far is the airport?"></textarea>
-    <div class="saved" data-note-saved="${v.id}"></div>
-  </div></div></section>`;
-
-  /* prev / next */
-  const navHTML = `<section class="vhero"><div class="wrap"><div class="vnav">
-    <a class="prev" href="${prev.slug}.html"><div class="lbl">&larr; Previous</div><div class="nm">${prev.name}</div></a>
-    <a class="next" href="${next.slug}.html"><div class="lbl">Next &rarr;</div><div class="nm">${next.name}</div></a>
-  </div></div></section>`;
-
-  document.getElementById('venuePage').innerHTML = heroHTML+introHTML+galHTML+inclHTML+notesHTML+navHTML;
+  var q = 'v=castle' + (location.search ? '&' + location.search.slice(1) : '');
+  location.replace('venue.html?' + q + location.hash);
 })();
 </script>
-<script src="app.js"></script>
+</head>
+<body>
+<p>Redirecting to <a href="venue.html?v=castle">Castle Farms</a>&hellip;</p>
 </body>
 </html>

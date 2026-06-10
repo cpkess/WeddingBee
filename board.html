@@ -71,12 +71,12 @@
   /* verdict standings */
   async function renderVerdict(store){
     const labels={love:['Love it','love'],maybe:['Maybe','maybe'],info:['Need info','info']};
-    const favorites = await store.getFavorites();
+    const [favorites, venues] = await Promise.all([store.getFavorites(), store.getVenues()]);
     const vEl=document.getElementById('verdict');
-    vEl.innerHTML = WED.venues.map(v=>{
+    vEl.innerHTML = venues.map(v=>{
       const st=favorites[v.id]||null;
       const l = st?labels[st]:['Not rated yet','none'];
-      return `<a class="vcell" href="${v.slug}.html"><div class="vsq" style="background:${v.vc}"></div>
+      return `<a class="vcell" href="venue.html?v=${encodeURIComponent(v.id)}"><div class="vsq" style="background:${v.vc}"></div>
         <div class="vn">${v.name}</div>
         <div class="vstate ${l[1]}">${l[0]}</div></a>`;
     }).join('');

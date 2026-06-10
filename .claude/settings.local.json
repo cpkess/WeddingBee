@@ -15,7 +15,20 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8123/data-store.js)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8123/supabase-config.js)",
       "Bash(kill %1)",
-      "Bash(jobs)"
+      "Bash(jobs)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(git fetch *)",
+      "Bash(gh repo *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://cpkess.github.io/WeddingBee/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://cpkess.github.io/WeddingBee/auth.js)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://cpkess.github.io/WeddingBee/styles.css)",
+      "Bash(curl -s https://cpkess.github.io/WeddingBee/)",
+      "Bash(curl -s -o /dev/null -w \"index: %{http_code}\\\\n\" https://cpkess.github.io/WeddingBee/)",
+      "Bash(curl -s -o /dev/null -w \"auth.js: %{http_code}\\\\n\" https://cpkess.github.io/WeddingBee/auth.js)",
+      "Bash(curl -s -o /dev/null -w \"styles.css: %{http_code}\\\\n\" https://cpkess.github.io/WeddingBee/styles.css)",
+      "Bash(curl -s \"https://cpkess.github.io/WeddingBee/\")",
+      "Bash(curl -s \"https://cpkess.github.io/WeddingBee/auth.js\")"
     ]
   }
 }
