@@ -123,10 +123,23 @@
         <a class="srcbtn" href="${pinSearch(term)}" target="_blank" rel="noopener">&#128204; Pinterest &nearr;</a>
         <a class="srcbtn" href="${gImages(term)}" target="_blank" rel="noopener">&#128269; Google Images &nearr;</a>
       </div>`;
+    function shotCellHTML(cat, id, caption, h){
+      const findTerm = caption ? (term+' '+caption) : term;
+      const findTitle = caption ? `Find a photo: ${esc(caption)}` : 'Find photos';
+      return `<div class="cell">
+          <a class="findbtn" href="${gImages(findTerm)}" target="_blank" rel="noopener" title="${findTitle}">&#128269;<span>Find photos</span></a>
+          <button class="pinbtn" data-pin-id="${id}" data-venue="${v.id}" data-venue-name="${esc(v.name)}" data-cat="${esc(cat.title)}" data-caption="${esc(caption)}" aria-label="Pin to board">&#9825;</button>
+          <image-slot id="${id}" shape="rounded" radius="14" fit="cover" style="height:${h}px" placeholder="${esc(caption)}"></image-slot>
+        </div>`;
+    }
+    function addTileHTML(cat, id, h){
+      return `<div class="cell cell-add">
+          <image-slot id="${id}" class="add-slot" shape="rounded" radius="14" fit="cover" style="height:${h}px" data-cat-key="${esc(cat.key)}" placeholder="+ Add a photo"></image-slot>
+        </div>`;
+    }
     (WED.galleryCats||[]).forEach(cat=>{
       const shots = (v.shots && v.shots[cat.key]) || [];
-      if(!shots.length) return;
-      galHTML += `<div class="gal-cat">
+      galHTML += `<div class="gal-cat" data-cat-key="${esc(cat.key)}">
         <div class="ghead"><span class="gn">${esc(cat.gn)}</span><h3>${esc(cat.title)}</h3>
           <a class="catsearch" href="${gImages(term+' '+cat.title)}" target="_blank" rel="noopener" title="Search images for ${esc(cat.title)}">&#128269; search this category &nearr;</a></div>
         <p class="gq">&ldquo;${esc(cat.q)}&rdquo;</p>
@@ -134,12 +147,10 @@
       shots.forEach((s,i)=>{
         const id = `${v.id}-${cat.key}-${i}`;
         const h = [320,240,280,360,260][i%5];
-        galHTML += `<div class="cell">
-          <a class="findbtn" href="${gImages(term+' '+s)}" target="_blank" rel="noopener" title="Find a photo: ${esc(s)}">&#128269;<span>Find photos</span></a>
-          <button class="pinbtn" data-pin-id="${id}" data-venue="${v.id}" data-venue-name="${esc(v.name)}" data-cat="${esc(cat.title)}" data-caption="${esc(s)}" aria-label="Pin to board">&#9825;</button>
-          <image-slot id="${id}" shape="rounded" radius="14" fit="cover" style="height:${h}px" placeholder="${esc(s)}"></image-slot>
-        </div>`;
+        galHTML += shotCellHTML(cat, id, s, h);
       });
+      const addId = `${v.id}-${cat.key}-${shots.length}`;
+      galHTML += addTileHTML(cat, addId, [320,240,280,360,260][shots.length%5]);
       galHTML += `</div></div>`;
     });
     galHTML += `</div></section>`;
@@ -179,6 +190,80 @@
         else { location.reload(); }
       });
     });
+
+    /* ---- on-page gallery photo adding ---- */
+    const heights = [320,240,280,360,260];
+    let saveTimer;
+    function scheduleSave(){
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(async ()=>{
+        const store = await waitFor(()=>window.WedStore);
+        if(!store) return;
+        try{ await store.upsertVenue(v); }
+        catch(e){
+          const app = await waitFor(()=>window.WedApp);
+          if(app) app.toast('Sign in to add this to the shared gallery','\u{1F510}');
+        }
+      }, 600);
+    }
+    function rewire(){
+      waitFor(()=>window.WedApp).then(app=>{ if(app) app.initPinButtons(); });
+    }
+    function promote(slotEl){
+      const catKey = slotEl.dataset.catKey;
+      const cat = (WED.galleryCats||[]).find(c=>c.key===catKey);
+      if(!cat) return;
+      const shots = v.shots[catKey] || (v.shots[catKey]=[]);
+      const idx = shots.length;
+      shots.push('');
+      const cell = slotEl.closest('.cell');
+      const masonry = cell.parentElement;
+      const id = slotEl.id;
+      cell.insertAdjacentHTML('afterend', shotCellHTML(cat, id, '', heights[idx%heights.length]));
+      cell.remove();
+      const newAddId = `${v.id}-${catKey}-${shots.length}`;
+      masonry.insertAdjacentHTML('beforeend', addTileHTML(cat, newAddId, heights[shots.length%heights.length]));
+      rewire();
+      scheduleSave();
+    }
+    const main = document.getElementById('venuePage');
+    main.addEventListener('imageslot-fill', (e)=>{
+      const el = e.target;
+      if(el && el.classList && el.classList.contains('add-slot')) promote(el);
+    });
+    main.addEventListener('drop', (e)=>{
+      const slot = e.target && e.target.closest && e.target.closest('.add-slot');
+      if(!slot) return;
+      const files = e.dataTransfer && e.dataTransfer.files;
+      if(!files || files.length<=1) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const catKey = slot.dataset.catKey;
+      const cat = (WED.galleryCats||[]).find(c=>c.key===catKey);
+      if(!cat) return;
+      const shots = v.shots[catKey] || (v.shots[catKey]=[]);
+      const startIdx = shots.length;
+      const fileArr = Array.from(files);
+      const cell = slot.closest('.cell');
+      const masonry = cell.parentElement;
+      cell.remove();
+      fileArr.forEach((file,k)=>{
+        const idx = startIdx+k;
+        shots.push('');
+        const id = `${v.id}-${catKey}-${idx}`;
+        masonry.insertAdjacentHTML('beforeend', shotCellHTML(cat, id, '', heights[idx%heights.length]));
+      });
+      const newAddId = `${v.id}-${catKey}-${shots.length}`;
+      masonry.insertAdjacentHTML('beforeend', addTileHTML(cat, newAddId, heights[shots.length%heights.length]));
+      fileArr.forEach((file,k)=>{
+        const idx = startIdx+k;
+        const id = `${v.id}-${catKey}-${idx}`;
+        const el = document.getElementById(id);
+        if(el && el.ingestFile) el.ingestFile(file);
+      });
+      rewire();
+      scheduleSave();
+    }, true);
 
     waitFor(()=>window.WedApp).then(app=>{
       if(!app) return;

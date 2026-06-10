@@ -719,11 +719,18 @@
         // Keep a session-local copy for id-less slots so the drop still
         // shows, even though it cannot persist.
         if (!this.id) { this._local = val; this._render(); }
+        this.dispatchEvent(new CustomEvent('imageslot-fill', { bubbles: true, composed: true, detail: { id: this.id } }));
       } catch (err) {
         if (gen !== this._gen) return;
         this._setError('Could not read that image.');
         console.warn('<image-slot> ingest failed:', err);
       }
+    }
+
+    // Public wrapper so external code (e.g. a gallery's "+ Add photo" tile
+    // handling multi-file drops) can feed a file into a specific slot.
+    ingestFile(file) {
+      return this._ingest(file);
     }
 
     _setError(msg) {

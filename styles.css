@@ -361,6 +361,12 @@ button{font-family:inherit;cursor:pointer;}
 .cell:hover .findbtn span{max-width:90px;opacity:1;}
 .cell .findbtn:hover{background:var(--accent-deep);}
 
+/* "+ add a photo" tile at the end of each gallery */
+.cell-add image-slot::part(frame){background:transparent;border:2px dashed var(--line);transition:.16s;}
+.cell-add image-slot::part(empty){color:var(--ink-soft);transition:.16s;}
+.cell-add image-slot:hover::part(frame),.cell-add image-slot:focus-within::part(frame){border-color:var(--accent);background:var(--accent-tint);}
+.cell-add image-slot:hover::part(empty),.cell-add image-slot:focus-within::part(empty){color:var(--accent-deep);}
+
 @media(max-width:760px){.masonry{column-count:2;}}
 
 /* included */

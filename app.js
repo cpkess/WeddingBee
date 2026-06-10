@@ -128,6 +128,8 @@
     const isPinned=(id)=>pins.some(p=>p.id===id);
 
     buttons.forEach(b=>{
+      if(b.dataset.wired) return;
+      b.dataset.wired='1';
       const id=b.dataset.pinId;
       if(isPinned(id)){ b.classList.add('pinned'); b.innerHTML='❤'; }
       b.addEventListener('click', async ()=>{

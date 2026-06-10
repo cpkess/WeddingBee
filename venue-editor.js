@@ -55,12 +55,11 @@
     </div>`;
   }
 
-  function buildForm(venue, galleryCats){
+  function buildForm(venue){
     const v = venue || {};
     const sources = v.sources || {};
     const moods = (v.moods||[]).join(', ');
     const included = v.included && v.included.length ? v.included : [{ic:'',title:'',desc:''}];
-    const shots = v.shots || {};
     const isNew = !venue;
 
     return `
@@ -92,15 +91,6 @@
       <div class="ve-section">
         <div class="ve-section-head"><span>What's included</span><button type="button" class="ve-add" data-add="incl">+ Add item</button></div>
         <div class="ve-incl-list">${included.map(inclRowHTML).join('')}</div>
-      </div>
-
-      <div class="ve-section">
-        <div class="ve-section-head"><span>Galleries</span></div>
-        ${galleryCats.map(cat=>`
-          <details class="ve-gallery">
-            <summary>${esc(cat.title)}</summary>
-            <textarea name="shots-${cat.key}" rows="4" placeholder="One photo idea per line">${esc((shots[cat.key]||[]).join('\n'))}</textarea>
-          </details>`).join('')}
       </div>
 
       <div class="ve-actions">
@@ -135,11 +125,6 @@
       title: row.querySelector('.ve-incl-title').value.trim(),
       desc: row.querySelector('.ve-incl-desc').value.trim(),
     })).filter(it=>it.title || it.desc || it.ic);
-    v.shots = {};
-    form.querySelectorAll('textarea[name^="shots-"]').forEach(ta=>{
-      const key = ta.name.slice('shots-'.length);
-      v.shots[key] = ta.value.split('\n').map(s=>s.trim()).filter(Boolean);
-    });
     if(!v.id){
       v.id = uniqueId(slugify(v.name), existingVenues);
       v.slug = v.id;
@@ -151,9 +136,8 @@
 
   function open(venue, onSave){
     const dlg = ensureDialog();
-    waitFor(()=>window.WED).then(async (WED)=>{
-      const galleryCats = (WED && WED.galleryCats) || [];
-      dlg.innerHTML = buildForm(venue, galleryCats);
+    (async ()=>{
+      dlg.innerHTML = buildForm(venue);
       const form = dlg.querySelector('form');
 
       form.querySelector('.ve-cancel').addEventListener('click', ()=>dlg.close());
@@ -201,7 +185,7 @@
       });
 
       dlg.showModal();
-    });
+    })();
   }
 
   window.WedVenueEditor = {
