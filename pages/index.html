@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gabrielle &amp; Kris — Where should we get married?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="home">
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="index.html">Gabrielle <span class="amp">&amp;</span> Kris<span class="dot"></span></a>
+    <button class="nav-toggle" aria-label="Menu">&#9776;</button>
+    <nav class="nav-links">
+      <a href="index.html#timeline">Timeline</a>
+      <a href="index.html#venues">Venues</a>
+      <a href="showdown.html">Showdown</a>
+      <a class="nav-board" href="board.html">&#9829; My Board <span class="cnt">0</span></a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="wrap">
+    <div class="eyebrow"><span class="pin"></span><span class="kicker">The Great 2028 Venue Hunt</span></div>
+    <h1>Where should <span class="c1">we</span> get <span class="c2">married</span>?<span class="c3">.</span></h1>
+    <p class="lede">Five wildly different places are in the running &mdash; a castle, two beaches, a clifftop, and (yes) a waterpark. Browse them, heart your favorites, and let's figure out where this whole thing is happening.</p>
+    <div class="meta">
+      <span class="chip"><span class="sq" style="background:var(--coral)"></span>Wedding window: <strong>August&ndash;December 2028</strong></span>
+      <span class="chip"><span class="sq" style="background:var(--sea)"></span><strong>5</strong> venues in the running</span>
+      <span class="chip"><span class="sq" style="background:var(--sun)"></span>Heart &rarr; build your board</span>
+    </div>
+  </div>
+</section>
+
+<svg class="wave" viewBox="0 0 1440 54" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0,28 C240,54 480,0 720,20 C960,40 1200,54 1440,24 L1440,54 L0,54 Z" fill="#FFFFFF"></path>
+</svg>
+
+<!-- TIMELINE -->
+<section class="timeline" id="timeline">
+  <div class="wrap sec">
+    <div class="sec-head">
+      <div>
+        <span class="kicker" style="--accent-deep:var(--orchid)">The plan, roughly</span>
+        <h2>What we decide, and when</h2>
+      </div>
+      <p>No spreadsheets, no panic. Just the big moves between now and &ldquo;I do&rdquo; &mdash; and which one matters most.</p>
+    </div>
+    <div class="tl-track" id="tlTrack"></div>
+    <div class="tl-callout">
+      <span class="big">Everything gets easier once the venue is chosen.</span>
+      <span>So that&rsquo;s really what this whole site is for.</span>
+    </div>
+  </div>
+</section>
+
+<!-- VENUES -->
+<section class="venues" id="venues">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="kicker">The contenders</span>
+        <h2>Five places, five feelings</h2>
+      </div>
+      <p>Tap any venue to step inside &mdash; galleries, what&rsquo;s included, and room to take notes.</p>
+    </div>
+    <div class="vgrid" id="vgrid"></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="venues cta">
+  <div class="wrap">
+    <div class="box" id="ctaBox">
+      <h2>Can&rsquo;t decide? Put them head to head.</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a class="btn btn-coral" href="showdown.html">The Gallery Showdown &rarr;</a>
+        <a class="btn" style="border-color:var(--cream);color:var(--cream)" href="board.html">&#9829; My Inspiration Board</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    <a class="brand" href="index.html">Gabrielle <span class="amp">&amp;</span> Kris<span class="dot"></span></a>
+    <span><a href="index.html#venues">Venues</a> &middot; <a href="showdown.html">Showdown</a> &middot; <a href="board.html">My Board</a></span>
+    <small>A wedding daydream &middot; August&ndash;December 2028</small>
+  </div>
+</footer>
+
+<script src="image-slot.js"></script>
+<script src="data.js"></script>
+<script>
+/* ---- build timeline ---- */
+(function(){
+  const tl=document.getElementById('tlTrack');
+  WED.timeline.forEach(p=>{
+    const el=document.createElement('div');
+    el.className='tl-phase'+(p.key?' key':'');
+    el.style.setProperty('--ph',p.color);
+    el.innerHTML=`
+      <span class="node"></span><span class="bar"></span>
+      ${p.key?'<span class="ph-badge"><span class="pulse"></span>We\u2019re here now</span>':''}
+      <div class="ph-num">${p.n}</div>
+      <h3>${p.title}</h3>
+      <div class="when">${p.when}</div>
+      <ul>${p.items.map(i=>`<li>${i.replace(/\*(.+?)\*/g,'<em>$1</em>')}</li>`).join('')}</ul>`;
+    tl.appendChild(el);
+  });
+})();
+
+/* ---- build venue grid ---- */
+(function(){
+  const g=document.getElementById('vgrid');
+  WED.venues.forEach((v,idx)=>{
+    const feat = idx===0;
+    const card=document.createElement('article');
+    card.className='vcard'+(feat?' feat':'');
+    card.style.setProperty('--vc',v.vc);
+    card.style.setProperty('--vc-deep',v.vcDeep);
+    card.innerHTML=`
+      <a class="vmedia" href="${v.slug}.html" aria-label="${v.name}">
+        <span class="vnum">${v.num}</span>
+        <image-slot id="${v.id}-hero" shape="rect" fit="cover" placeholder="Drop a hero photo of ${v.name}"></image-slot>
+      </a>
+      <div class="vbody">
+        <span class="theme"><span class="sq"></span>${v.theme}</span>
+        <h3>${v.name}</h3>
+        <div class="vloc">${v.location}</div>
+        <p class="vline">${v.oneLiner}</p>
+        <div class="tags">${v.moods.map(m=>`<span class="tag" style="background:color-mix(in srgb, ${v.vc} 16%, white);color:${v.vcDeep}">${m}</span>`).join('')}</div>
+        <div class="faves">
+          <button class="fave" data-venue="${v.id}" data-state="love" aria-pressed="false"><span class="ic">&#9829;</span>Love it</button>
+          <button class="fave" data-venue="${v.id}" data-state="maybe" aria-pressed="false"><span class="ic">&#128077;</span>Maybe</button>
+          <button class="fave" data-venue="${v.id}" data-state="info" aria-pressed="false"><span class="ic">&#128269;</span>More info</button>
+        </div>
+        <div class="vfoot">
+          <a class="explore" href="${v.slug}.html">Explore ${v.name.split(' ')[0]} <span class="arr">&rarr;</span></a>
+        </div>
+      </div>`;
+    g.appendChild(card);
+  });
+})();
+
+/* ---- confetti specks on CTA ---- */
+(function(){
+  const box=document.getElementById('ctaBox'); if(!box) return;
+  const cols=['var(--coral)','var(--sea)','var(--sun)','var(--orchid)','var(--palm)'];
+  for(let i=0;i<10;i++){
+    const s=document.createElement('span'); s.className='conf';
+    s.style.background=cols[i%cols.length];
+    s.style.left=(6+Math.random()*88)+'%';
+    s.style.top=(8+Math.random()*84)+'%';
+    s.style.transform='rotate('+(Math.random()*90)+'deg)';
+    s.style.opacity=0.85;
+    box.appendChild(s);
+  }
+})();
+</script>
+<script src="app.js"></script>
+</body>
+</html>

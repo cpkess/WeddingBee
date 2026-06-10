@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Venue — Gabrielle &amp; Kris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+/* =====================================================================
+   Gabrielle & Kris — Wedding Venue Explorer
+   Coastal Editorial, with joy. Shared across all pages.
+   ===================================================================== */
+
+:root{
+  /* base */
+  --cream:#FBF7EF;
+  --paper:#FFFFFF;
+  --ink:#103537;          /* deep teal-black text */
+  --ink-soft:#4A6365;
+  --line:#E7DECB;         /* hairline on cream */
+
+  /* joyful coastal accents */
+  --sea:#0FB5BC;
+  --sea-deep:#0A8A90;
+  --coral:#FF6B5A;
+  --coral-deep:#E84C3B;
+  --sun:#F4B23C;
+  --sky:#5C8BE6;
+  --palm:#3DA86A;
+  --orchid:#7E76DA;
+
+  /* venue signature hues (set per page on body[data-venue]) */
+  --accent:var(--sea);
+  --accent-deep:var(--sea-deep);
+  --accent-tint:#E4F6F6;
+
+  --maxw:1200px;
+  --r-lg:22px;
+  --r-md:14px;
+  --r-sm:8px;
+  --shadow:0 18px 50px -22px rgba(16,53,55,.45);
+  --shadow-sm:0 8px 24px -14px rgba(16,53,55,.4);
+
+  --font-display:'Bricolage Grotesque',-apple-system,system-ui,sans-serif;
+  --font-body:'DM Sans',-apple-system,system-ui,sans-serif;
+  --font-hand:'Caveat',cursive;
+}
+
+/* venue themes */
+body[data-venue="castle"]   {--accent:var(--orchid);--accent-deep:#5F57C4;--accent-tint:#ECEBFB;}
+body[data-venue="beaches"]  {--accent:var(--sea);  --accent-deep:var(--sea-deep);--accent-tint:#E1F6F6;}
+body[data-venue="hyatt"]    {--accent:var(--coral);--accent-deep:var(--coral-deep);--accent-tint:#FFE9E4;}
+body[data-venue="greatwolf"]{--accent:var(--palm); --accent-deep:#2C8552;--accent-tint:#E2F3E9;}
+body[data-venue="sandos"]   {--accent:var(--sun);  --accent-deep:#D6912A;--accent-tint:#FBEFD6;}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;background:var(--cream);color:var(--ink);
+  font-family:var(--font-body);font-size:17px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;}
+.display{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;line-height:.95;}
+.hand{font-family:var(--font-hand);font-weight:700;}
+.kicker{font-size:12px;letter-spacing:.28em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);}
+.tabnum{font-variant-numeric:tabular-nums;}
+
+/* ---------------- top nav ---------------- */
+.nav{position:sticky;top:0;z-index:50;background:rgba(251,247,239,.86);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);}
+.nav-in{display:flex;align-items:center;gap:8px;height:66px;}
+.brand{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-.01em;display:flex;align-items:center;gap:9px;}
+.brand .amp{color:var(--coral);}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--sun);display:inline-block;}
+.nav-links{margin-left:auto;display:flex;align-items:center;gap:4px;}
+.nav-links a{font-size:14px;font-weight:600;padding:8px 14px;border-radius:30px;color:var(--ink-soft);transition:.16s;}
+.nav-links a:hover{color:var(--ink);background:var(--accent-tint);}
+.nav-links a.active{color:var(--ink);background:var(--accent-tint);}
+.nav-board{display:inline-flex;align-items:center;gap:7px;background:var(--ink);color:var(--cream);
+  padding:9px 16px;border-radius:30px;font-weight:700;font-size:14px;}
+.nav-board:hover{background:var(--accent-deep);color:#fff;}
+.nav-board .cnt{background:var(--coral);color:#fff;border-radius:20px;min-width:21px;height:21px;
+  display:inline-flex;align-items:center;justify-content:center;font-size:12px;padding:0 6px;}
+.nav-toggle{display:none;}
+
+/* ---------------- buttons ---------------- */
+.btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:15px;
+  padding:13px 24px;border-radius:34px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);
+  transition:.18s;}
+.btn:hover{background:var(--ink);color:var(--cream);transform:translateY(-1px);}
+.btn-fill{background:var(--accent-deep);border-color:var(--accent-deep);color:#fff;}
+.btn-fill:hover{background:var(--ink);border-color:var(--ink);color:var(--cream);}
+.btn-coral{background:var(--coral);border-color:var(--coral);color:#fff;}
+.btn-coral:hover{background:var(--coral-deep);border-color:var(--coral-deep);color:#fff;}
+
+/* ---------------- favorite control (love/maybe/info) ---------------- */
+.faves{display:flex;gap:8px;flex-wrap:wrap;}
+.fave{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:13.5px;
+  padding:9px 15px;border-radius:30px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink-soft);
+  transition:.16s;}
+.fave:hover{border-color:var(--ink);color:var(--ink);transform:translateY(-1px);}
+.fave .ic{font-size:15px;line-height:1;}
+.fave[data-state="love"][aria-pressed="true"]{background:var(--coral);border-color:var(--coral);color:#fff;}
+.fave[data-state="maybe"][aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#3a2c08;}
+.fave[data-state="info"][aria-pressed="true"]{background:var(--sky);border-color:var(--sky);color:#fff;}
+
+/* mood tags / chips */
+.tags{display:flex;flex-wrap:wrap;gap:8px;}
+.tag{font-size:12px;letter-spacing:.02em;font-weight:600;padding:5px 12px;border-radius:30px;
+  background:var(--accent-tint);color:var(--accent-deep);white-space:nowrap;}
+.tag.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink-soft);}
+
+/* ---------------- toast ---------------- */
+.toast-wrap{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:10px;align-items:center;pointer-events:none;}
+.toast{background:var(--ink);color:var(--cream);padding:13px 20px;border-radius:30px;font-weight:600;font-size:14.5px;
+  box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;opacity:0;transform:translateY(14px);
+  transition:.32s cubic-bezier(.2,.8,.3,1);}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast .em{font-size:17px;}
+
+/* ---------------- folder connect bar ---------------- */
+.fsbar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:180;
+  display:flex;align-items:center;gap:12px;max-width:min(620px,calc(100vw - 28px));
+  background:var(--paper);border:1px solid var(--line);border-radius:40px;
+  padding:11px 14px 11px 20px;box-shadow:var(--shadow);font-size:14px;font-weight:500;color:var(--ink);}
+.fsbar.ok{background:#E6F6EE;border-color:#BFE6CF;}
+.fsbar.warn{background:#FFF4E2;border-color:#F4D9A8;}
+.fsbar .ic{font-size:16px;line-height:1;flex:0 0 auto;}
+.fsbar span{line-height:1.3;}
+.fsbar strong{font-weight:700;}
+.fsbar .connect{flex:0 0 auto;background:var(--accent-deep);color:#fff;border:none;border-radius:30px;
+  padding:9px 17px;font-weight:700;font-size:13.5px;}
+.fsbar .connect:hover{background:var(--ink);}
+.fsbar .connect:disabled{opacity:.6;}
+.fsbar .x{flex:0 0 auto;background:none;border:none;font-size:20px;line-height:1;color:var(--ink-soft);padding:0 4px;}
+.fsbar .x:hover{color:var(--ink);}
+@media(max-width:560px){.fsbar{flex-wrap:wrap;border-radius:18px;}}
+
+/* ---------------- wave divider ---------------- */
+.wave{display:block;width:100%;height:54px;}
+
+/* ---------------- footer ---------------- */
+.foot{background:var(--ink);color:#CFE0DF;margin-top:90px;padding:54px 0 40px;}
+.foot .wrap{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between;}
+.foot .brand{color:var(--cream);}
+.foot a{color:#CFE0DF;font-weight:600;}
+.foot a:hover{color:#fff;}
+.foot small{color:#7FA0A0;}
+
+/* =====================================================================
+   HOME
+   ===================================================================== */
+.hero{position:relative;overflow:hidden;padding:64px 0 30px;}
+.hero .wrap{position:relative;z-index:2;}
+.hero .eyebrow{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;}
+.hero .eyebrow .pin{width:10px;height:10px;border-radius:50%;background:var(--coral);}
+.hero h1{font-family:var(--font-display);font-weight:800;letter-spacing:-.03em;line-height:.92;
+  font-size:clamp(44px,8vw,104px);margin:0 0 18px;max-width:14ch;}
+.hero h1 .c1{color:var(--sea);}
+.hero h1 .c2{color:var(--coral);}
+.hero h1 .c3{color:var(--sun);}
+.hero .lede{font-size:clamp(18px,2.2vw,23px);max-width:46ch;color:var(--ink-soft);margin:0 0 30px;}
+.hero .meta{display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center;font-weight:700;}
+.hero .meta .chip{display:inline-flex;align-items:center;gap:9px;background:var(--paper);border:1px solid var(--line);
+  padding:9px 16px;border-radius:30px;font-size:14px;box-shadow:var(--shadow-sm);}
+.hero .meta .chip .sq{width:11px;height:11px;border-radius:3px;}
+.blob{position:absolute;border-radius:50%;filter:blur(2px);opacity:.5;z-index:1;}
+.blob.b1{width:340px;height:340px;background:radial-gradient(circle,var(--sun),transparent 70%);top:-90px;right:-40px;}
+.blob.b2{width:300px;height:300px;background:radial-gradient(circle,var(--sea),transparent 70%);bottom:-120px;left:40%;opacity:.32;}
+
+/* section heading */
+.sec{padding:30px 0;}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:34px;}
+.sec-head h2{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;font-size:clamp(30px,4.4vw,52px);margin:.25em 0 0;line-height:1;}
+.sec-head p{margin:0;color:var(--ink-soft);max-width:42ch;}
+
+/* ---------------- timeline ---------------- */
+.timeline{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.tl-track{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;}
+.tl-phase{position:relative;padding-top:34px;}
+.tl-phase .node{position:absolute;top:0;left:0;width:22px;height:22px;border-radius:50%;background:var(--cream);
+  border:3px solid var(--ph,var(--sea));}
+.tl-phase .bar{position:absolute;top:9px;left:22px;right:-18px;height:3px;background:var(--line);}
+.tl-phase:last-child .bar{display:none;}
+.tl-phase .ph-num{font-family:var(--font-display);font-weight:800;font-size:13px;letter-spacing:.18em;color:var(--ph,var(--sea));text-transform:uppercase;}
+.tl-phase h3{font-family:var(--font-display);font-weight:800;font-size:21px;line-height:1.05;margin:8px 0 4px;letter-spacing:-.01em;}
+.tl-phase .when{font-size:13px;font-weight:700;color:var(--ink-soft);margin-bottom:10px;}
+.tl-phase ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px;}
+.tl-phase li{font-size:13.5px;color:var(--ink-soft);padding-left:16px;position:relative;}
+.tl-phase li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--ph,var(--sea));opacity:.6;}
+.tl-phase.key{isolation:isolate;}
+.tl-phase.key::before{content:"";position:absolute;inset:-16px -14px;border-radius:var(--r-md);z-index:-1;background:color-mix(in srgb, var(--ph,var(--sea)) 14%, white);}
+.ph-badge{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--coral);color:#fff;padding:4px 11px;border-radius:20px;margin-bottom:10px;}
+.ph-badge .pulse{width:7px;height:7px;border-radius:50%;background:#fff;animation:pulse 1.6s infinite;}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.tl-callout{margin-top:14px;display:flex;align-items:center;gap:12px;background:var(--ink);color:var(--cream);
+  border-radius:var(--r-md);padding:16px 22px;font-weight:600;}
+.tl-callout .big{font-family:var(--font-hand);font-size:26px;color:var(--sun);line-height:1;}
+
+/* ---------------- venue grid ---------------- */
+.venues{padding:46px 0;}
+.vgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:30px;}
+.vgrid .vcard:first-child{grid-column:1 / -1;}
+.vcard{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
+  box-shadow:var(--shadow-sm);transition:transform .2s, box-shadow .2s;display:flex;flex-direction:column;}
+.vcard:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
+.vcard.feat{flex-direction:row;}
+.vcard .vmedia{position:relative;background:color-mix(in srgb, var(--vc,var(--sea)) 12%, white);}
+.vcard .vmedia image-slot{width:100%;height:100%;display:block;}
+.vcard:not(.feat) .vmedia{height:300px;}
+.vcard.feat .vmedia{flex:1 1 56%;min-height:430px;}
+.vcard .vbody{padding:26px 28px 28px;display:flex;flex-direction:column;gap:13px;}
+.vcard.feat .vbody{flex:1 1 44%;justify-content:center;padding:40px;}
+.vcard .vnum{position:absolute;top:16px;left:18px;z-index:3;font-family:var(--font-display);font-weight:800;
+  font-size:14px;letter-spacing:.1em;color:#fff;background:rgba(16,53,55,.5);backdrop-filter:blur(4px);
+  padding:5px 12px;border-radius:30px;}
+.vcard .theme{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:var(--vc-deep,var(--sea-deep));}
+.vcard .theme .sq{width:10px;height:10px;border-radius:3px;background:var(--vc,var(--sea));}
+.vcard h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;line-height:.96;margin:0;
+  font-size:clamp(28px,3.4vw,40px);}
+.vcard .vloc{font-size:14px;font-weight:600;color:var(--ink-soft);margin-top:-4px;}
+.vcard .vline{color:var(--ink-soft);font-size:15.5px;margin:2px 0 4px;}
+.vcard .vfoot{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:6px;flex-wrap:wrap;}
+.vcard .explore{display:inline-flex;align-items:center;gap:7px;font-weight:700;color:var(--vc-deep,var(--sea-deep));}
+.vcard .explore .arr{transition:transform .18s;}
+.vcard:hover .explore .arr{transform:translateX(4px);}
+
+/* CTA band */
+.cta{margin:30px 0 0;}
+.cta .box{background:var(--ink);color:var(--cream);border-radius:var(--r-lg);padding:54px 48px;
+  display:flex;flex-wrap:wrap;gap:26px;align-items:center;justify-content:space-between;position:relative;overflow:hidden;}
+.cta h2{font-family:var(--font-display);font-weight:800;font-size:clamp(28px,3.6vw,42px);margin:0;max-width:18ch;letter-spacing:-.02em;}
+.cta .conf{position:absolute;width:14px;height:14px;border-radius:3px;opacity:.9;}
+
+/* =====================================================================
+   VENUE PAGE
+   ===================================================================== */
+.vhero{position:relative;padding:30px 0 0;}
+.vhero .top{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between;margin-bottom:24px;}
+.back{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--ink-soft);font-size:14px;}
+.back:hover{color:var(--ink);}
+.vhero h1{font-family:var(--font-display);font-weight:800;letter-spacing:-.03em;line-height:.9;
+  font-size:clamp(48px,9vw,120px);margin:.1em 0;}
+.vhero .sub{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;font-weight:700;color:var(--ink-soft);margin-bottom:8px;}
+.vhero .sub .theme{color:var(--accent-deep);display:inline-flex;align-items:center;gap:8px;}
+.vhero .sub .sq{width:12px;height:12px;border-radius:3px;background:var(--accent);}
+.vhero-media{position:relative;border-radius:var(--r-lg);overflow:hidden;height:min(58vh,540px);background:var(--accent-tint);box-shadow:var(--shadow);}
+.vhero-media image-slot{width:100%;height:100%;}
+.vhero .ribbon{position:absolute;right:22px;top:22px;z-index:4;}
+
+/* intro split */
+.vintro{padding:54px 0 20px;display:grid;grid-template-columns:1.3fr 1fr;gap:48px;align-items:start;}
+.vintro .lead{font-family:var(--font-display);font-weight:600;font-size:clamp(22px,2.8vw,30px);line-height:1.25;letter-spacing:-.01em;}
+.vintro .why{background:var(--accent-tint);border-radius:var(--r-md);padding:24px 26px;}
+.vintro .why h4{margin:0 0 8px;font-family:var(--font-display);font-weight:800;font-size:18px;color:var(--accent-deep);}
+.vintro .why p{margin:0;color:var(--ink-soft);font-size:15.5px;}
+.vintro .note{font-family:var(--font-hand);font-size:23px;color:var(--accent-deep);transform:rotate(-2deg);margin-top:18px;display:inline-block;}
+
+/* gallery */
+.gal{padding:34px 0;}
+.gal-cat{margin-bottom:46px;}
+.gal-cat .ghead{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;}
+.gal-cat .gn{font-family:var(--font-display);font-weight:800;color:var(--accent);font-size:15px;}
+.gal-cat h3{font-family:var(--font-display);font-weight:800;font-size:clamp(24px,3vw,34px);letter-spacing:-.02em;margin:0;}
+.gal-cat .gq{color:var(--ink-soft);font-style:italic;margin:2px 0 18px;}
+.masonry{column-count:3;column-gap:18px;}
+.masonry .cell{break-inside:avoid;margin-bottom:18px;position:relative;}
+.masonry image-slot{width:100%;border-radius:var(--r-md);overflow:hidden;display:block;}
+.cell .pinbtn{position:absolute;top:10px;right:10px;z-index:5;width:38px;height:38px;border-radius:50%;border:none;
+  background:rgba(255,255,255,.92);color:var(--ink);font-size:17px;display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow-sm);transition:.16s;}
+.cell .pinbtn:hover{transform:scale(1.1);}
+.cell .pinbtn.pinned{background:var(--coral);color:#fff;}
+
+/* find-photos source bar */
+.srcbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:-6px 0 30px;padding:16px 18px;
+  background:var(--accent-tint);border-radius:var(--r-md);}
+.srclabel{font-weight:700;font-size:14px;color:var(--accent-deep);margin-right:4px;}
+.srcbtn{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:13.5px;
+  padding:9px 15px;border-radius:30px;background:var(--paper);border:1.5px solid color-mix(in srgb, var(--accent) 45%, white);color:var(--ink);transition:.16s;}
+.srcbtn:hover{border-color:var(--accent-deep);transform:translateY(-1px);box-shadow:var(--shadow-sm);}
+.srcbtn .muted{font-weight:600;color:var(--ink-soft);}
+.catsearch{margin-left:auto;font-weight:700;font-size:12.5px;color:var(--accent-deep);opacity:.85;white-space:nowrap;}
+.catsearch:hover{opacity:1;text-decoration:underline;}
+
+/* per-slot find button */
+.cell .findbtn{position:absolute;top:10px;left:10px;z-index:5;display:inline-flex;align-items:center;gap:6px;
+  height:38px;padding:0 13px;border-radius:30px;background:rgba(16,53,55,.62);backdrop-filter:blur(5px);
+  color:#fff;font-size:13px;font-weight:700;box-shadow:var(--shadow-sm);transition:.16s;}
+.cell .findbtn span{max-width:0;overflow:hidden;white-space:nowrap;opacity:0;transition:.18s;}
+.cell:hover .findbtn span{max-width:90px;opacity:1;}
+.cell .findbtn:hover{background:var(--accent-deep);}
+
+@media(max-width:760px){.masonry{column-count:2;}}
+
+/* included */
+.incl{padding:40px 0;}
+.incl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.incl-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);padding:24px;}
+.incl-card .ic{width:42px;height:42px;border-radius:12px;background:var(--accent-tint);color:var(--accent-deep);
+  display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px;}
+.incl-card h4{font-family:var(--font-display);font-weight:800;font-size:18px;margin:0 0 6px;}
+.incl-card p{margin:0;color:var(--ink-soft);font-size:14.5px;}
+
+/* notes */
+.notes{padding:20px 0 10px;}
+.notes .box{background:var(--accent-tint);border-radius:var(--r-lg);padding:30px 32px;}
+.notes h3{font-family:var(--font-display);font-weight:800;font-size:24px;margin:0 0 4px;}
+.notes .prompt{color:var(--ink-soft);margin:0 0 16px;}
+.notes textarea{width:100%;min-height:120px;border:1.5px solid var(--line);border-radius:var(--r-md);background:var(--paper);
+  padding:16px 18px;font-family:inherit;font-size:16px;color:var(--ink);resize:vertical;}
+.notes textarea:focus{outline:none;border-color:var(--accent);}
+.notes .saved{font-size:13px;font-weight:600;color:var(--accent-deep);margin-top:8px;height:18px;}
+
+/* venue nav (prev/next) */
+.vnav{display:flex;justify-content:space-between;gap:14px;padding:30px 0 0;}
+.vnav a{flex:1;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);padding:18px 22px;transition:.18s;}
+.vnav a:hover{border-color:var(--ink);transform:translateY(-2px);}
+.vnav .lbl{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);}
+.vnav .nm{font-family:var(--font-display);font-weight:800;font-size:20px;margin-top:2px;}
+.vnav a.next{text-align:right;}
+
+/* =====================================================================
+   SHOWDOWN
+   ===================================================================== */
+.sd-hero{padding:54px 0 20px;text-align:center;}
+.sd-hero h1{font-family:var(--font-display);font-weight:800;letter-spacing:-.03em;font-size:clamp(40px,7vw,84px);margin:.15em auto;max-width:16ch;line-height:.95;}
+.sd-hero p{color:var(--ink-soft);max-width:50ch;margin:0 auto;font-size:18px;}
+.sd-filter{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:30px 0;}
+.sd-row{margin-bottom:40px;}
+.sd-row .rhead{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.sd-row .rsq{width:18px;height:18px;border-radius:5px;}
+.sd-row h3{font-family:var(--font-display);font-weight:800;font-size:26px;margin:0;letter-spacing:-.01em;}
+.sd-row .rloc{color:var(--ink-soft);font-weight:600;font-size:14px;}
+.sd-strip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,1fr);gap:14px;overflow-x:auto;padding-bottom:12px;scroll-snap-type:x mandatory;}
+.sd-strip image-slot{height:240px;border-radius:var(--r-md);scroll-snap-align:start;}
+
+/* =====================================================================
+   BOARD
+   ===================================================================== */
+.bd-hero{padding:48px 0 10px;}
+.bd-hero h1{font-family:var(--font-display);font-weight:800;letter-spacing:-.03em;font-size:clamp(40px,7vw,80px);margin:.1em 0;line-height:.95;}
+.bd-hero p{color:var(--ink-soft);max-width:48ch;font-size:18px;}
+.board-masonry{column-count:4;column-gap:18px;margin-top:24px;}
+.board-masonry .cell{break-inside:avoid;margin-bottom:18px;position:relative;}
+.board-masonry image-slot{width:100%;border-radius:var(--r-md);}
+.bd-cap{font-family:var(--font-hand);font-size:19px;color:var(--ink-soft);margin-top:4px;text-align:center;}
+.empty{text-align:center;padding:80px 20px;color:var(--ink-soft);}
+.empty .em{font-size:54px;}
+.empty h3{font-family:var(--font-display);font-weight:800;font-size:26px;color:var(--ink);margin:14px 0 6px;}
+
+/* verdict summary on board */
+.verdict{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:10px 0 36px;}
+.vcell{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);padding:18px;text-align:center;}
+.vcell .vsq{width:14px;height:14px;border-radius:4px;margin:0 auto 8px;}
+.vcell .vn{font-family:var(--font-display);font-weight:800;font-size:16px;line-height:1.1;}
+.vcell .vstate{font-size:13px;font-weight:700;margin-top:8px;padding:4px 10px;border-radius:20px;display:inline-block;}
+.vstate.love{background:var(--coral);color:#fff;}
+.vstate.maybe{background:var(--sun);color:#3a2c08;}
+.vstate.info{background:var(--sky);color:#fff;}
+.vstate.none{background:var(--line);color:var(--ink-soft);}
+
+@media(max-width:980px){
+  .board-masonry{column-count:3;}
+  .vintro{grid-template-columns:1fr;gap:26px;}
+  .incl-grid{grid-template-columns:repeat(2,1fr);}
+  .tl-track{grid-template-columns:repeat(2,1fr);gap:30px 22px;}
+  .tl-phase .bar{display:none;}
+  .verdict{grid-template-columns:repeat(3,1fr);}
+}
+@media(max-width:760px){
+  .nav-links{position:fixed;inset:66px 0 auto 0;flex-direction:column;background:var(--cream);border-bottom:1px solid var(--line);
+    padding:12px 24px;gap:4px;display:none;}
+  .nav-links.open{display:flex;}
+  .nav-links a{padding:12px;}
+  .nav-toggle{display:inline-flex;margin-left:auto;background:none;border:none;font-size:24px;}
+  .vgrid{grid-template-columns:1fr;}
+  .vcard.feat{flex-direction:column;}
+  .vcard.feat .vmedia{min-height:280px;}
+  .masonry{column-count:2;}
+  .board-masonry{column-count:2;}
+  .verdict{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:560px){.masonry{column-count:1;}.tl-track{grid-template-columns:1fr;}}
+
+</style>
+</head>
+<body data-venue="beaches" data-venue-id="beaches" data-page="venue">
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="index.html">Gabrielle <span class="amp">&amp;</span> Kris<span class="dot"></span></a>
+    <button class="nav-toggle" aria-label="Menu">&#9776;</button>
+    <nav class="nav-links">
+      <a href="index.html#timeline">Timeline</a>
+      <a href="index.html#venues">Venues</a>
+      <a href="showdown.html">Showdown</a>
+      <a class="nav-board" href="board.html">&#9829; My Board <span class="cnt">0</span></a>
+    </nav>
+  </div>
+</header>
+
+<main id="venuePage"></main>
+
+<footer class="foot">
+  <div class="wrap">
+    <a class="brand" href="index.html">Gabrielle <span class="amp">&amp;</span> Kris<span class="dot"></span></a>
+    <span><a href="index.html#venues">All venues</a> &middot; <a href="showdown.html">Showdown</a> &middot; <a href="board.html">My Board</a></span>
+    <small>A wedding daydream &middot; August&ndash;December 2028</small>
+  </div>
+</footer>
+
+<script>
+/* BEGIN USAGE */
+/**
+ * <image-slot> — user-fillable image placeholder.
+ *
+ * Drop this into a deck, mockup, or page wherever you want the user to
+ * supply an image. You control the slot's shape and size; the user fills it
+ * by dragging an image file onto it (or clicking to browse). The dropped
+ * image persists across reloads via a .image-slots.state.json sidecar —
+ * same read-via-fetch / write-via-window.omelette pattern as
+ * design_canvas.jsx, so the filled slot shows on share links, downloaded
+ * zips, and PPTX export. Outside the omelette runtime the slot is read-only.
+ *
+ * The host bridge only allows sidecar writes at the project root, so the
+ * HTML that uses this component is assumed to live at the project root too
+ * (same constraint as design_canvas.jsx).
+ *
+ * Attributes:
+ *   id           Persistence key. REQUIRED for the drop to survive reload —
+ *                every slot on the page needs a distinct id.
+ *   shape        'rect' | 'rounded' | 'circle' | 'pill'   (default 'rounded')
+ *                'circle' applies 50% border-radius; on a non-square slot
+ *                that's an ellipse — set equal width and height for a true
+ *                circle.
+ *   radius       Corner radius in px for 'rounded'.       (default 12)
+ *   mask         Any CSS clip-path value. Overrides `shape` — use this for
+ *                hexagons, blobs, arbitrary polygons.
+ *   fit          object-fit: cover | contain | fill.       (default 'cover')
+ *                With cover (the default) double-clicking the filled slot
+ *                enters a reframe mode: the whole image spills past the mask
+ *                (translucent outside, opaque inside), drag to reposition,
+ *                corner-drag to scale. The crop persists alongside the image
+ *                in the sidecar. contain/fill stay static.
+ *   position     object-position for fit=contain|fill.     (default '50% 50%')
+ *   placeholder  Empty-state caption.                      (default 'Drop an image')
+ *   src          Optional initial/fallback image URL. A user drop overrides
+ *                it; clearing the drop reveals src again.
+ *
+ * Size and layout come from ordinary CSS on the element — width/height
+ * inline or from a parent grid — so it composes with any layout.
+ *
+ * Usage:
+ *   <image-slot id="hero"   style="width:800px;height:450px" shape="rounded" radius="20"
+ *               placeholder="Drop a hero image"></image-slot>
+ *   <image-slot id="avatar" style="width:120px;height:120px" shape="circle"></image-slot>
+ *   <image-slot id="kite"   style="width:300px;height:300px"
+ *               mask="polygon(50% 0, 100% 50%, 50% 100%, 0 50%)"></image-slot>
+ */
+/* END USAGE */
+
+(() => {
+  const STATE_FILE = '.image-slots.state.json';
+  // 2× a ~600px slot in a 1920-wide deck — retina-sharp without making the
+  // sidecar enormous. A 1200px WebP at q=0.85 is ~150-300KB.
+  const MAX_DIM = 1200;
+  // Raster formats only. SVG is excluded (can carry script; createImageBitmap
+  // on SVG blobs is inconsistent). GIF is excluded because the canvas
+  // re-encode keeps only the first frame, so an animated GIF would silently
+  // go still — better to reject than surprise.
+  const ACCEPT = ['image/png', 'image/jpeg', 'image/webp', 'image/avif'];
+
+  // ── Persistence: real image files + File System Access ──────────────────
+  // Photos become REAL FILES in an images/ folder, so the site is shareable
+  // via GitHub with no build/bake step, and any visitor (incl. GitHub Pages)
+  // sees them. Three layers:
+  //   • DISPLAY — on load we fetch images/manifest.json → { id:{f,s,x,y} } and
+  //     point each slot at images/<f>. Pure static; viewing needs no write
+  //     access. Works for everyone you share the repo with.
+  //   • EDITING (you, locally) — the File System Access API writes the dropped
+  //     image into <repo>/images/<id>.<ext> and rewrites images/manifest.json
+  //     on disk. Commit + push and it's live for all. No extra step.
+  //   • FALLBACK — if the browser lacks File System Access or no folder is
+  //     connected yet, the drop is kept in IndexedDB so it still shows on your
+  //     machine; connecting the folder flushes those to disk automatically.
+  const subs = new Set();
+  let slots = {};        // id -> {u,s,x,y}  (u: relative path or data: URL)
+  let manifest = {};     // id -> {f,s,x,y}  committed files (from disk)
+  const tombstones = new Set();
+  let loaded = false;
+  let loadP = null;
+  const num = (v, d) => (Number.isFinite(v) ? v : d);
+  const QS = (typeof location !== 'undefined' ? location.search : '') || '';
+
+  // --- IndexedDB: dir handle (meta) + local fallback drops (slots) ---
+  const DB_NAME = 'wed-image-slots';
+  let dbP = null;
+  function openDB() {
+    if (dbP) return dbP;
+    dbP = new Promise((resolve) => {
+      let req;
+      try { req = indexedDB.open(DB_NAME, 2); }
+      catch (e) { resolve(null); return; }
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains('slots')) db.createObjectStore('slots');
+        if (!db.objectStoreNames.contains('meta')) db.createObjectStore('meta');
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => resolve(null);
+    });
+    return dbP;
+  }
+  function txReq(store, mode, run) {
+    return openDB().then((db) => {
+      if (!db) return null;
+      return new Promise((resolve) => {
+        let tx;
+        try { tx = db.transaction(store, mode); }
+        catch (e) { resolve(null); return; }
+        let req;
+        try { req = run(tx.objectStore(store)); }
+        catch (e) { resolve(null); return; }
+        tx.onabort = tx.onerror = () => resolve(null);
+        if (req && 'onsuccess' in req) { req.onsuccess = () => resolve(req.result); }
+        else { tx.oncomplete = () => resolve(true); }
+      });
+    });
+  }
+  const metaGet = (k) => txReq('meta', 'readonly', (s) => s.get(k));
+  const metaSet = (k, v) => txReq('meta', 'readwrite', (s) => { s.put(v, k); });
+  const slotsPut = (k, v) => txReq('slots', 'readwrite', (s) => { s.put(v, k); });
+  const slotsDel = (k) => txReq('slots', 'readwrite', (s) => { s.delete(k); });
+  function slotsAll() {
+    return openDB().then((db) => {
+      if (!db) return null;
+      return new Promise((resolve) => {
+        const out = {};
+        let tx;
+        try { tx = db.transaction('slots', 'readonly'); }
+        catch (e) { resolve(null); return; }
+        const req = tx.objectStore('slots').openCursor();
+        req.onsuccess = () => { const c = req.result; if (c) { out[c.key] = c.value; c.continue(); } else resolve(out); };
+        req.onerror = () => resolve(out);
+      });
+    });
+  }
+
+  // --- File System Access ---
+  const FS = {
+    supported: (typeof window !== 'undefined' && 'showDirectoryPicker' in window),
+    root: null, ready: false,
+  };
+  const fsSubs = new Set();
+  const fsNotify = () => fsSubs.forEach((fn) => { try { fn(); } catch (e) {} });
+
+  async function fsVerify(h, withPrompt) {
+    if (!h || !h.queryPermission) return false;
+    const opts = { mode: 'readwrite' };
+    let p = await h.queryPermission(opts);
+    if (p !== 'granted' && withPrompt && h.requestPermission) p = await h.requestPermission(opts);
+    return p === 'granted';
+  }
+  async function fsRestore() {
+    if (!FS.supported) return;
+    try {
+      const h = await metaGet('dir');
+      if (h) { FS.root = h; FS.ready = await fsVerify(h, false); }
+    } catch (e) {}
+  }
+  async function fsImagesDir(create) {
+    if (!FS.root) return null;
+    return FS.root.getDirectoryHandle('images', { create: !!create });
+  }
+  async function fsWriteImage(id, blob, ext) {
+    const dir = await fsImagesDir(true);
+    const name = id + '.' + ext;
+    const fh = await dir.getFileHandle(name, { create: true });
+    const w = await fh.createWritable();
+    await w.write(blob); await w.close();
+    return name;
+  }
+  async function fsDeleteImage(name) {
+    try { const dir = await fsImagesDir(false); if (dir) await dir.removeEntry(name); } catch (e) {}
+  }
+  async function fsWriteManifest() {
+    const dir = await fsImagesDir(true);
+    const fh = await dir.getFileHandle('manifest.json', { create: true });
+    const w = await fh.createWritable();
+    await w.write(JSON.stringify(manifest)); await w.close();
+  }
+  function dataUrlToBlob(durl) {
+    const i = durl.indexOf(',');
+    const mime = (durl.slice(0, i).match(/data:([^;]+)/) || [])[1] || 'image/jpeg';
+    const bin = atob(durl.slice(i + 1));
+    const arr = new Uint8Array(bin.length);
+    for (let j = 0; j < bin.length; j++) arr[j] = bin.charCodeAt(j);
+    return new Blob([arr], { type: mime });
+  }
+  const extFor = (mime) => mime === 'image/webp' ? 'webp' : mime === 'image/png' ? 'png'
+    : mime === 'image/avif' ? 'avif' : 'jpg';
+
+  // Push any IndexedDB-held drops to disk once a folder is connected.
+  async function fsFlush() {
+    if (!FS.ready) return;
+    const all = await slotsAll();
+    if (all) {
+      for (const id in all) {
+        const v = all[id];
+        if (v && v.__del) { const m = manifest[id]; if (m) { delete manifest[id]; await fsDeleteImage(m.f); } await slotsDel(id); continue; }
+        if (v && v.u && /^data:image\//i.test(v.u)) {
+          try {
+            const blob = dataUrlToBlob(v.u);
+            const name = await fsWriteImage(id, blob, extFor(blob.type));
+            manifest[id] = { f: name, s: num(v.s, 1), x: num(v.x, 0), y: num(v.y, 0) };
+            slots[id] = { u: 'images/' + name + QS, s: num(v.s, 1), x: num(v.x, 0), y: num(v.y, 0) };
+            await slotsDel(id);
+          } catch (e) {}
+        }
+      }
+    }
+    await fsWriteManifest().catch(() => {});
+    subs.forEach((fn) => fn());
+  }
+  async function fsConnect() {
+    if (!FS.supported) throw new Error('not-supported');
+    // Already remembered (from a previous session) but permission lapsed —
+    // just re-request on the stored handle instead of making you re-pick.
+    if (FS.root && !FS.ready && (await fsVerify(FS.root, true))) {
+      FS.ready = true; await fsFlush(); fsNotify(); return FS.root.name;
+    }
+    const h = await window.showDirectoryPicker({ id: 'wed-repo', mode: 'readwrite' });
+    if (!(await fsVerify(h, true))) throw new Error('permission-denied');
+    FS.root = h; FS.ready = true;
+    await metaSet('dir', h);
+    await fsFlush();
+    fsNotify();
+    return h.name;
+  }
+  // Page-level UI (the "Connect folder" banner in app.js) talks to this.
+  window.ImageSlotFS = {
+    supported: FS.supported,
+    isReady: () => FS.ready,
+    folderName: () => (FS.root ? FS.root.name : null),
+    connect: fsConnect,
+    onChange: (fn) => { fsSubs.add(fn); return () => fsSubs.delete(fn); },
+  };
+
+  function fetchManifest() {
+    return fetch('images/manifest.json' + QS, { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  }
+
+  function load() {
+    if (loadP) return loadP;
+    loadP = Promise.all([fetchManifest(), slotsAll(), fsRestore()])
+      .then((res) => {
+        const man = res[0]; const stored = res[1] || {};
+        manifest = (man && typeof man === 'object') ? man : {};
+        const merged = {};
+        // 1. committed files (shared via GitHub) — lowest precedence
+        for (const k in manifest) {
+          const m = manifest[k];
+          if (m && m.f) merged[k] = { u: 'images/' + m.f + QS, s: num(m.s, 1), x: num(m.x, 0), y: num(m.y, 0) };
+        }
+        // 2. local IndexedDB drops / tombstones (your not-yet-committed edits)
+        for (const k in stored) { const v = stored[k]; if (v && v.__del) delete merged[k]; else if (v) merged[k] = v; }
+        // 3. in-memory changes that raced ahead of this read win
+        for (const k in slots) merged[k] = slots[k];
+        for (const id of tombstones) delete merged[id];
+        slots = merged;
+        tombstones.clear();
+      })
+      .catch(() => {})
+      .then(() => { loaded = true; subs.forEach((fn) => fn()); });
+    return loadP;
+  }
+
+  const S_MAX = 5;
+  const clampS = (s) => Math.max(1, Math.min(S_MAX, s));
+
+  function getSlot(id) {
+    const v = slots[id];
+    if (!v) return null;
+    return typeof v === 'string' ? { u: v, s: 1, x: 0, y: 0 } : v;
+  }
+
+  // Write a newly-dropped image to disk (preferred) or IndexedDB (fallback).
+  async function writeDrop(id, val) {
+    if (FS.ready) {
+      try {
+        const blob = dataUrlToBlob(val.u);
+        const name = await fsWriteImage(id, blob, extFor(blob.type));
+        manifest[id] = { f: name, s: num(val.s, 1), x: num(val.x, 0), y: num(val.y, 0) };
+        await fsWriteManifest();
+        await slotsDel(id);          // drop any stale local copy
+        return;
+      } catch (e) { /* fall through to local */ }
+    }
+    slotsPut(id, val);               // local fallback (shows on this machine)
+  }
+
+  function persist(id, val) {
+    // CLEAR
+    if (!val) {
+      const m = manifest[id];
+      if (m) {
+        delete manifest[id];
+        if (FS.ready) { fsDeleteImage(m.f); fsWriteManifest().catch(() => {}); }
+        else slotsPut(id, { __del: 1 });   // hide locally until folder connected
+      } else slotsDel(id);
+      return;
+    }
+    // NEW IMAGE BYTES (data: URL from a drop/browse)
+    if (val.u && /^data:image\//i.test(val.u)) { writeDrop(id, val); return; }
+    // FRAMING-ONLY (pan/zoom commit; u absent or already a path)
+    if (manifest[id]) {
+      manifest[id] = { f: manifest[id].f, s: num(val.s, 1), x: num(val.x, 0), y: num(val.y, 0) };
+      if (FS.ready) fsWriteManifest().catch(() => {});
+    } else {
+      slotsAll().then((all) => {
+        const cur = all && all[id];
+        if (cur && cur.u) slotsPut(id, { u: cur.u, s: num(val.s, 1), x: num(val.x, 0), y: num(val.y, 0) });
+      });
+    }
+  }
+
+  function setSlot(id, val) {
+    if (!id) return;
+    if (val) { slots[id] = val; tombstones.delete(id); }
+    else { delete slots[id]; if (!loaded) tombstones.add(id); }
+    subs.forEach((fn) => fn());
+    if (loaded) persist(id, val); else load().then(() => persist(id, val));
+  }
+
+  // ── Image downscale ─────────────────────────────────────────────────────
+  // Encode through a canvas so the sidecar carries resized bytes, not the
+  // raw upload. Longest side is capped at 2× the slot's rendered width
+  // (retina) and at MAX_DIM. WebP keeps alpha and is ~10× smaller than PNG
+  // for photos, so there's no need for per-image format picking.
+  async function toDataUrl(file, targetW) {
+    const bitmap = await createImageBitmap(file);
+    try {
+      const cap = Math.min(MAX_DIM, Math.max(1, Math.round(targetW * 2)) || MAX_DIM);
+      const scale = Math.min(1, cap / Math.max(bitmap.width, bitmap.height));
+      const w = Math.max(1, Math.round(bitmap.width * scale));
+      const h = Math.max(1, Math.round(bitmap.height * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
+      return canvas.toDataURL('image/webp', 0.85);
+    } finally {
+      bitmap.close && bitmap.close();
+    }
+  }
+
+  // ── Custom element ──────────────────────────────────────────────────────
+  const stylesheet =
+    ':host{display:inline-block;position:relative;vertical-align:top;' +
+    '  font:13px/1.3 system-ui,-apple-system,sans-serif;color:rgba(0,0,0,.55);width:240px;height:160px}' +
+    '.frame{position:absolute;inset:0;overflow:hidden;background:rgba(0,0,0,.04)}' +
+    // .frame img (clipped) and .spill (unclipped ghost + handles) share the
+    // same left/top/width/height in frame-%, computed by _applyView(), so the
+    // inside-mask crop and the outside-mask spill stay pixel-aligned.
+    '.frame img{position:absolute;max-width:none;transform:translate(-50%,-50%);' +
+    '  -webkit-user-drag:none;user-select:none;touch-action:none}' +
+    // Reframe mode (double-click): the full image spills past the mask. The
+    // spill layer is sized to the IMAGE bounds so its corners are where the
+    // resize handles belong. The ghost <img> inside is translucent; the real
+    // clipped <img> underneath shows the opaque in-mask crop.
+    '.spill{position:absolute;transform:translate(-50%,-50%);display:none;z-index:1;' +
+    '  cursor:grab;touch-action:none}' +
+    ':host([data-panning]) .spill{cursor:grabbing}' +
+    '.spill .ghost{position:absolute;inset:0;width:100%;height:100%;opacity:.35;' +
+    '  pointer-events:none;-webkit-user-drag:none;user-select:none;' +
+    '  box-shadow:0 0 0 1px rgba(0,0,0,.2),0 12px 32px rgba(0,0,0,.2)}' +
+    '.spill .handle{position:absolute;width:12px;height:12px;border-radius:50%;' +
+    '  background:#fff;box-shadow:0 0 0 1.5px #c96442,0 1px 3px rgba(0,0,0,.3);' +
+    '  transform:translate(-50%,-50%)}' +
+    '.spill .handle[data-c=nw]{left:0;top:0;cursor:nwse-resize}' +
+    '.spill .handle[data-c=ne]{left:100%;top:0;cursor:nesw-resize}' +
+    '.spill .handle[data-c=sw]{left:0;top:100%;cursor:nesw-resize}' +
+    '.spill .handle[data-c=se]{left:100%;top:100%;cursor:nwse-resize}' +
+    ':host([data-reframe]){z-index:10}' +
+    ':host([data-reframe]) .spill{display:block}' +
+    ':host([data-reframe]) .frame{box-shadow:0 0 0 2px #c96442}' +
+    '.empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;' +
+    '  justify-content:center;gap:6px;text-align:center;padding:12px;box-sizing:border-box;' +
+    '  cursor:pointer;user-select:none}' +
+    '.empty svg{opacity:.45}' +
+    '.empty .cap{max-width:90%;font-weight:500;letter-spacing:.01em}' +
+    '.empty .sub{font-size:11px}' +
+    '.empty .sub u{text-underline-offset:2px;text-decoration-color:rgba(0,0,0,.25)}' +
+    '.empty:hover .sub u{color:rgba(0,0,0,.75);text-decoration-color:currentColor}' +
+    ':host([data-over]) .frame{outline:2px solid #c96442;outline-offset:-2px;' +
+    '  background:rgba(201,100,66,.10)}' +
+    '.ring{position:absolute;inset:0;pointer-events:none;border:1.5px dashed rgba(0,0,0,.25);' +
+    '  transition:border-color .12s}' +
+    ':host([data-over]) .ring{border-color:#c96442}' +
+    ':host([data-filled]) .ring{display:none}' +
+    // Controls sit BELOW the mask (top:100%), absolutely positioned so the
+    // author-declared slot height is unaffected. The gap is padding, not a
+    // top offset, so the hover target stays contiguous with the frame.
+    '.ctl{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);' +
+    '  display:flex;gap:7px;opacity:0;pointer-events:none;transition:opacity .12s;z-index:6;' +
+    '  white-space:nowrap}' +
+    ':host([data-filled][data-editable]:hover) .ctl,:host([data-reframe]) .ctl' +
+    '  {opacity:1;pointer-events:auto}' +
+    '.ctl button{appearance:none;border:0;border-radius:30px;padding:8px 15px;cursor:pointer;' +
+    '  background:rgba(16,53,55,.85);color:#fff;font:600 12px/1 system-ui,-apple-system,sans-serif;' +
+    '  backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(0,0,0,.3)}' +
+    '.ctl button:hover{background:#103537}' +
+    '.err{position:absolute;left:8px;bottom:8px;right:8px;color:#b3261e;font-size:11px;' +
+    '  background:rgba(255,255,255,.85);padding:4px 6px;border-radius:5px;pointer-events:none}';
+
+  const icon =
+    '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
+    '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>' +
+    '<path d="m21 15-5-5L5 21"/></svg>';
+
+  class ImageSlot extends HTMLElement {
+    static get observedAttributes() {
+      return ['shape', 'radius', 'mask', 'fit', 'position', 'placeholder', 'src', 'id'];
+    }
+
+    constructor() {
+      super();
+      const root = this.attachShadow({ mode: 'open' });
+      // .spill and .ctl sit OUTSIDE .frame so overflow:hidden + border-radius
+      // on the frame (circle, pill, rounded) can't clip them.
+      root.innerHTML =
+        '<style>' + stylesheet + '</style>' +
+        '<div class="frame" part="frame">' +
+        '  <img part="image" alt="" draggable="false" style="display:none">' +
+        '  <div class="empty" part="empty">' + icon +
+        '    <div class="cap"></div>' +
+        '    <div class="sub">or <u>browse files</u></div></div>' +
+        '  <div class="ring" part="ring"></div>' +
+        '</div>' +
+        '<div class="spill">' +
+        '  <img class="ghost" alt="" draggable="false">' +
+        '  <div class="handle" data-c="nw"></div><div class="handle" data-c="ne"></div>' +
+        '  <div class="handle" data-c="sw"></div><div class="handle" data-c="se"></div>' +
+        '</div>' +
+        '<div class="ctl"><button data-act="replace" title="Replace image">Replace</button>' +
+        '  <button data-act="clear" title="Remove image">Remove</button></div>' +
+        '<input type="file" accept="' + ACCEPT.join(',') + '" hidden>';
+      this._frame = root.querySelector('.frame');
+      this._ring = root.querySelector('.ring');
+      this._img = root.querySelector('.frame img');
+      this._empty = root.querySelector('.empty');
+      this._cap = root.querySelector('.cap');
+      this._sub = root.querySelector('.sub');
+      this._spill = root.querySelector('.spill');
+      this._ghost = root.querySelector('.ghost');
+      this._err = null;
+      this._input = root.querySelector('input');
+      this._depth = 0;
+      this._gen = 0;
+      this._view = { s: 1, x: 0, y: 0 };
+      this._subFn = () => this._render();
+      // Shadow-DOM listeners live with the shadow DOM — bound once here so
+      // disconnect/reconnect (e.g. React remount) doesn't stack handlers.
+      this._empty.addEventListener('click', () => this._input.click());
+      root.addEventListener('click', (e) => {
+        const act = e.target && e.target.getAttribute && e.target.getAttribute('data-act');
+        if (act === 'replace') { this._exitReframe(true); this._input.click(); }
+        if (act === 'clear') {
+          this._exitReframe(false);
+          this._gen++;
+          this._local = null;
+          if (this.id) setSlot(this.id, null); else this._render();
+        }
+      });
+      this._input.addEventListener('change', () => {
+        const f = this._input.files && this._input.files[0];
+        if (f) this._ingest(f);
+        this._input.value = '';
+      });
+      // naturalWidth/Height aren't known until load — re-apply so the cover
+      // baseline is computed from real dimensions, not the 100%×100% fallback.
+      this._img.addEventListener('load', () => this._applyView());
+      // Gated on editable + fit=cover so share links and contain/fill slots
+      // stay static.
+      this.addEventListener('dblclick', (e) => {
+        if (!this.hasAttribute('data-editable') || !this._reframes()) return;
+        e.preventDefault();
+        if (this.hasAttribute('data-reframe')) this._exitReframe(true);
+        else this._enterReframe();
+      });
+      // Pan + resize both originate on the spill layer. A handle pointerdown
+      // drives an aspect-locked resize anchored at the opposite corner; any
+      // other pointerdown on the spill pans. Offsets are frame-% so a
+      // reframed slot survives responsive resize / PPTX export.
+      this._spill.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0 || !this.hasAttribute('data-reframe')) return;
+        e.preventDefault();
+        e.stopPropagation();
+        this._spill.setPointerCapture(e.pointerId);
+        const rect = this.getBoundingClientRect();
+        const fw = rect.width || 1, fh = rect.height || 1;
+        const corner = e.target.getAttribute && e.target.getAttribute('data-c');
+        let move;
+        if (corner) {
+          // Resize about the OPPOSITE corner. Viewport-px throughout (rect
+          // fw/fh, not clientWidth) so the math survives a transform:scale()
+          // ancestor — deck_stage renders slides scaled-to-fit.
+          const iw = this._img.naturalWidth || 1, ih = this._img.naturalHeight || 1;
+          const base = Math.max(fw / iw, fh / ih);
+          const sx = corner.includes('e') ? 1 : -1;
+          const sy = corner.includes('s') ? 1 : -1;
+          const s0 = this._view.s;
+          const w0 = iw * base * s0, h0 = ih * base * s0;
+          const cx0 = (50 + this._view.x) / 100 * fw;
+          const cy0 = (50 + this._view.y) / 100 * fh;
+          const ox = cx0 - sx * w0 / 2, oy = cy0 - sy * h0 / 2;
+          const diag0 = Math.hypot(w0, h0);
+          const ux = sx * w0 / diag0, uy = sy * h0 / diag0;
+          move = (ev) => {
+            const proj = (ev.clientX - rect.left - ox) * ux +
+                         (ev.clientY - rect.top - oy) * uy;
+            const s = clampS(s0 * proj / diag0);
+            const d = diag0 * s / s0;
+            this._view.s = s;
+            this._view.x = (ox + ux * d / 2) / fw * 100 - 50;
+            this._view.y = (oy + uy * d / 2) / fh * 100 - 50;
+            this._clampView();
+            this._applyView();
+          };
+        } else {
+          this.setAttribute('data-panning', '');
+          const start = { px: e.clientX, py: e.clientY, x: this._view.x, y: this._view.y };
+          move = (ev) => {
+            this._view.x = start.x + (ev.clientX - start.px) / fw * 100;
+            this._view.y = start.y + (ev.clientY - start.py) / fh * 100;
+            this._clampView();
+            this._applyView();
+          };
+        }
+        const up = () => {
+          try { this._spill.releasePointerCapture(e.pointerId); } catch {}
+          this._spill.removeEventListener('pointermove', move);
+          this._spill.removeEventListener('pointerup', up);
+          this._spill.removeEventListener('pointercancel', up);
+          this.removeAttribute('data-panning');
+          this._dragUp = null;
+        };
+        // Stashed so _exitReframe (Escape / outside-click mid-drag) can
+        // tear the capture + listeners down synchronously.
+        this._dragUp = up;
+        this._spill.addEventListener('pointermove', move);
+        this._spill.addEventListener('pointerup', up);
+        this._spill.addEventListener('pointercancel', up);
+      });
+      // Wheel zoom stays available inside reframe mode as a trackpad nicety —
+      // zooms toward the cursor (offset' = cursor·(1-k) + offset·k).
+      this.addEventListener('wheel', (e) => {
+        if (!this.hasAttribute('data-reframe')) return;
+        e.preventDefault();
+        const r = this.getBoundingClientRect();
+        const cx = (e.clientX - r.left) / r.width * 100 - 50;
+        const cy = (e.clientY - r.top) / r.height * 100 - 50;
+        const prev = this._view.s;
+        const next = clampS(prev * Math.pow(1.0015, -e.deltaY));
+        if (next === prev) return;
+        const k = next / prev;
+        this._view.s = next;
+        this._view.x = cx * (1 - k) + this._view.x * k;
+        this._view.y = cy * (1 - k) + this._view.y * k;
+        this._clampView();
+        this._applyView();
+      }, { passive: false });
+    }
+
+    connectedCallback() {
+      // Warn once per page — an id-less slot works for the session but
+      // cannot persist, and two id-less slots would share nothing.
+      if (!this.id && !ImageSlot._warned) {
+        ImageSlot._warned = true;
+        console.warn('<image-slot> without an id will not persist its dropped image.');
+      }
+      this.addEventListener('dragenter', this);
+      this.addEventListener('dragover', this);
+      this.addEventListener('dragleave', this);
+      this.addEventListener('drop', this);
+      subs.add(this._subFn);
+      // width%/height% in _applyView encode the frame aspect at call time —
+      // a host resize (responsive grid, pane divider) would stretch the
+      // image until the next _render. Re-render on size change: _render()
+      // re-seeds _view from stored before clamp/apply, so a shrink→grow
+      // cycle round-trips instead of ratcheting x/y toward the narrower
+      // frame's clamp range.
+      this._ro = new ResizeObserver(() => this._render());
+      this._ro.observe(this);
+      load();
+      this._render();
+    }
+
+    disconnectedCallback() {
+      subs.delete(this._subFn);
+      this.removeEventListener('dragenter', this);
+      this.removeEventListener('dragover', this);
+      this.removeEventListener('dragleave', this);
+      this.removeEventListener('drop', this);
+      if (this._ro) { this._ro.disconnect(); this._ro = null; }
+      this._exitReframe(false);
+    }
+
+    _enterReframe() {
+      if (this.hasAttribute('data-reframe')) return;
+      this.setAttribute('data-reframe', '');
+      this._applyView();
+      // Close on click outside (the spill handler stopPropagation()s so
+      // in-image drags don't reach this) and on Escape. Listeners are held
+      // on the instance so _exitReframe / disconnectedCallback can detach
+      // exactly what was attached.
+      this._outside = (e) => {
+        if (e.composedPath && e.composedPath().includes(this)) return;
+        this._exitReframe(true);
+      };
+      this._esc = (e) => { if (e.key === 'Escape') this._exitReframe(true); };
+      document.addEventListener('pointerdown', this._outside, true);
+      document.addEventListener('keydown', this._esc, true);
+    }
+
+    _exitReframe(commit) {
+      if (!this.hasAttribute('data-reframe')) return;
+      if (this._dragUp) this._dragUp();
+      this.removeAttribute('data-reframe');
+      this.removeAttribute('data-panning');
+      if (this._outside) document.removeEventListener('pointerdown', this._outside, true);
+      if (this._esc) document.removeEventListener('keydown', this._esc, true);
+      this._outside = this._esc = null;
+      if (commit) this._commitView();
+    }
+
+    attributeChangedCallback() { if (this.shadowRoot) this._render(); }
+
+    // handleEvent — one listener object for all four drag events keeps the
+    // add/remove symmetric and the depth counter correct.
+    handleEvent(e) {
+      if (e.type === 'dragenter' || e.type === 'dragover') {
+        // Without preventDefault the browser never fires 'drop'.
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+        if (e.type === 'dragenter') this._depth++;
+        this.setAttribute('data-over', '');
+      } else if (e.type === 'dragleave') {
+        // dragenter/leave fire for every descendant crossing — count depth
+        // so hovering the icon inside the empty state doesn't flicker.
+        if (--this._depth <= 0) { this._depth = 0; this.removeAttribute('data-over'); }
+      } else if (e.type === 'drop') {
+        e.preventDefault();
+        e.stopPropagation();
+        this._depth = 0;
+        this.removeAttribute('data-over');
+        const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+        if (f) this._ingest(f);
+      }
+    }
+
+    async _ingest(file) {
+      this._setError(null);
+      if (!file || ACCEPT.indexOf(file.type) < 0) {
+        this._setError('Drop a PNG, JPEG, WebP, or AVIF image.');
+        return;
+      }
+      // toDataUrl can take hundreds of ms on a large photo. A Clear or a
+      // newer drop during that window would be clobbered when this await
+      // resumes — bump + capture a generation so stale encodes bail.
+      const gen = ++this._gen;
+      try {
+        const w = this.clientWidth || this.offsetWidth || MAX_DIM;
+        const url = await toDataUrl(file, w);
+        if (gen !== this._gen) return;
+        // Only exit reframe once the new image is in hand — a rejected type
+        // or decode failure leaves the in-progress crop untouched.
+        this._exitReframe(false);
+        const val = { u: url, s: 1, x: 0, y: 0 };
+        setSlot(this.id || '', val);
+        // Keep a session-local copy for id-less slots so the drop still
+        // shows, even though it cannot persist.
+        if (!this.id) { this._local = val; this._render(); }
+      } catch (err) {
+        if (gen !== this._gen) return;
+        this._setError('Could not read that image.');
+        console.warn('<image-slot> ingest failed:', err);
+      }
+    }
+
+    _setError(msg) {
+      if (this._err) { this._err.remove(); this._err = null; }
+      if (!msg) return;
+      const d = document.createElement('div');
+      d.className = 'err'; d.textContent = msg;
+      this.shadowRoot.appendChild(d);
+      this._err = d;
+      setTimeout(() => { if (this._err === d) { d.remove(); this._err = null; } }, 3000);
+    }
+
+    // Reframing (pan/resize) is only meaningful for fit=cover — contain/fill
+    // keep the old object-fit path and double-click is a no-op.
+    _reframes() {
+      return this.hasAttribute('data-filled') &&
+        (this.getAttribute('fit') || 'cover') === 'cover';
+    }
+
+    // Cover-baseline geometry, shared by clamp/apply/resize. Null until the
+    // img has loaded (naturalWidth is 0 before that) or when the slot has no
+    // layout box — ResizeObserver fires with a 0×0 rect under display:none,
+    // and clamping against a degenerate 1×1 frame would silently pull the
+    // stored pan toward zero.
+    _geom() {
+      const iw = this._img.naturalWidth, ih = this._img.naturalHeight;
+      const fw = this.clientWidth, fh = this.clientHeight;
+      if (!iw || !ih || !fw || !fh) return null;
+      return { iw, ih, fw, fh, base: Math.max(fw / iw, fh / ih) };
+    }
+
+    _clampView() {
+      // Pan range on each axis is half the overflow past the frame edge.
+      const g = this._geom();
+      if (!g) return;
+      const mx = Math.max(0, (g.iw * g.base * this._view.s / g.fw - 1) * 50);
+      const my = Math.max(0, (g.ih * g.base * this._view.s / g.fh - 1) * 50);
+      this._view.x = Math.max(-mx, Math.min(mx, this._view.x));
+      this._view.y = Math.max(-my, Math.min(my, this._view.y));
+    }
+
+    _applyView() {
+      const g = this._geom();
+      const fit = this.getAttribute('fit') || 'cover';
+      if (fit !== 'cover' || !g) {
+        // Non-cover, or dimensions not known yet (before img load).
+        this._img.style.width = '100%';
+        this._img.style.height = '100%';
+        this._img.style.left = '50%';
+        this._img.style.top = '50%';
+        this._img.style.objectFit = fit;
+        this._img.style.objectPosition = this.getAttribute('position') || '50% 50%';
+        return;
+      }
+      // Cover baseline: img fills the frame on its tighter axis at s=1, so
+      // pan works immediately on the overflowing axis without zooming first.
+      // Width/height and left/top are all frame-% — depends only on the
+      // frame aspect ratio, so a responsive resize keeps the same crop. The
+      // spill layer mirrors the same box so its corners = image corners.
+      const k = g.base * this._view.s;
+      const w = (g.iw * k / g.fw * 100) + '%';
+      const h = (g.ih * k / g.fh * 100) + '%';
+      const l = (50 + this._view.x) + '%';
+      const t = (50 + this._view.y) + '%';
+      this._img.style.width = w; this._img.style.height = h;
+      this._img.style.left = l; this._img.style.top = t;
+      this._img.style.objectFit = '';
+      this._spill.style.width = w; this._spill.style.height = h;
+      this._spill.style.left = l; this._spill.style.top = t;
+    }
+
+    _commitView() {
+      const v = { s: this._view.s, x: this._view.x, y: this._view.y };
+      if (this._userUrl) v.u = this._userUrl;
+      // Framing-only (no u) persists too so an author-src slot remembers its
+      // crop; clearing the sidecar still falls through to src=.
+      if (this.id) setSlot(this.id, v);
+      else { this._local = v; }
+    }
+
+    _render() {
+      // Shape / mask. Presets use border-radius so the dashed ring can
+      // follow the rounded outline; clip-path is only applied for an
+      // explicit `mask` (the ring is hidden there since a rectangle
+      // dashed border chopped by an arbitrary polygon looks broken).
+      const mask = this.getAttribute('mask');
+      const shape = (this.getAttribute('shape') || 'rounded').toLowerCase();
+      let radius = '';
+      if (shape === 'circle') radius = '50%';
+      else if (shape === 'pill') radius = '9999px';
+      else if (shape === 'rounded') {
+        const n = parseFloat(this.getAttribute('radius'));
+        radius = (Number.isFinite(n) ? n : 12) + 'px';
+      }
+      this._frame.style.borderRadius = mask ? '' : radius;
+      this._frame.style.clipPath = mask || '';
+      this._ring.style.borderRadius = mask ? '' : radius;
+      this._ring.style.display = mask ? 'none' : '';
+
+      // Controls and reframe entry gate on this so share links stay read-only.
+      const editable = !!(window.omelette && window.omelette.writeFile) ||
+        (typeof localStorage !== 'undefined');
+      this.toggleAttribute('data-editable', editable);
+      this._sub.style.display = editable ? '' : 'none';
+
+      // Content. Accept canvas-origin data: URLs and committed image-file
+      // paths (images/<file>, possibly with a ?token query in preview).
+      let stored = this.id ? getSlot(this.id) : this._local;
+      if (stored && stored.u && !/^data:image\//i.test(stored.u) &&
+          stored.u.indexOf('images/') !== 0) stored = null;
+      const srcAttr = this.getAttribute('src') || '';
+      this._userUrl = (stored && stored.u) || null;
+      const url = this._userUrl || srcAttr;
+      // Don't clobber an in-flight reframe with a store-triggered re-render.
+      if (!this.hasAttribute('data-reframe')) {
+        this._view = {
+          s: stored && Number.isFinite(stored.s) ? clampS(stored.s) : 1,
+          x: stored && Number.isFinite(stored.x) ? stored.x : 0,
+          y: stored && Number.isFinite(stored.y) ? stored.y : 0,
+        };
+      }
+      this._cap.textContent = this.getAttribute('placeholder') || 'Drop an image';
+      // Toggle via style.display — the [hidden] attribute alone loses to
+      // the display:flex / display:block rules in the stylesheet above.
+      if (url) {
+        if (this._img.getAttribute('src') !== url) {
+          this._img.src = url;
+          this._ghost.src = url;
+        }
+        this._img.style.display = 'block';
+        this._empty.style.display = 'none';
+        this.setAttribute('data-filled', '');
+        this._clampView();
+        this._applyView();
+      } else {
+        this._img.style.display = 'none';
+        this._img.removeAttribute('src');
+        this._ghost.removeAttribute('src');
+        this._empty.style.display = 'flex';
+        this.removeAttribute('data-filled');
+      }
+    }
+  }
+
+  if (!customElements.get('image-slot')) {
+    customElements.define('image-slot', ImageSlot);
+  }
+})();
+
+</script>
+<script>
+/* =====================================================================
+   Venue + timeline data for Gabrielle & Kris. Exposed as window.WED.
+   ===================================================================== */
+window.WED = {
+  couple: "Gabrielle & Kris",
+  window: "August – December 2028",
+
+  timeline: [
+    { n:"Phase 01", title:"Dreaming & Exploring", when:"Now – Summer 2026", color:"var(--sky)", key:true,
+      items:["Local or destination?","What kind of experience excites us?","Big party or small & cozy?","What atmosphere feels like *us*?"] },
+    { n:"Phase 02", title:"Choosing the Destination", when:"Fall 2026 – Summer 2027", color:"var(--orchid)",
+      items:["Pick the destination","Pick the venue","Rough guest-count range","Preferred wedding season"] },
+    { n:"Phase 03", title:"Building the Wedding", when:"Late 2027", color:"var(--sea)",
+      items:["Wedding party","Travel plans","Guest communication","Photographer & decor direction"] },
+    { n:"Phase 04", title:"Final Details", when:"Early 2028", color:"var(--palm)",
+      items:["Final guest count","Logistics & timeline","Reception details","Last little touches"] },
+    { n:"Phase 05", title:"Wedding Time!", when:"Aug – Dec 2028", color:"var(--coral)",
+      items:["Show up","Marry your person","Dance till late","Celebrate 🎉"] },
+  ],
+
+  galleryCats: [
+    { key:"arrival",   gn:"Gallery 01", title:"Arrival & First Impressions", q:"What does it feel like when guests arrive?" },
+    { key:"ceremony",  gn:"Gallery 02", title:"Ceremony Inspiration",        q:"What does the ceremony feel like?" },
+    { key:"reception", gn:"Gallery 03", title:"Reception Inspiration",       q:"What does the celebration feel like?" },
+    { key:"guest",     gn:"Gallery 04", title:"Guest Experience",            q:"What does the whole weekend feel like?" },
+    { key:"area",      gn:"Gallery 05", title:"The Surrounding Area",        q:"What's the broader destination like?" },
+    { key:"signature", gn:"Gallery 06", title:"Signature Moments",           q:"What makes this place unmistakably itself?" },
+  ],
+
+  venues: [
+    {
+      id:"castle", slug:"castle-farms", num:"Venue 01",
+      name:"Castle Farms", location:"Charlevoix, Michigan",
+      theme:"Fairytale Castle", vc:"var(--orchid)", vcDeep:"#5F57C4",
+      searchTerm:"Castle Farms Charlevoix wedding",
+      sources:{ site:"https://castlefarms.com/weddings/", siteLabel:"castlefarms.com", ig:"https://www.instagram.com/castlefarms.weddings/", igLabel:"@castlefarms.weddings" },
+      moods:["Fairytale","Romantic","Elegant","No Passport"],
+      oneLiner:"A real French-inspired castle in Northern Michigan — turrets, courtyards, and yes, a dragon.",
+      lead:"Imagine saying \u201cI do\u201d inside a 1918 stone castle, ringed by formal gardens and Romanesque arches, with all the destination-wedding magic and none of the boarding passes.",
+      why:"It delivers fairytale, storybook energy that feels genuinely special \u2014 while staying an easy Midwest drive for your guests. Destination feel, hometown logistics.",
+      note:"a castle. with a dragon. need we say more?",
+      included:[
+        {ic:"\u265F",title:"Five distinct spaces",desc:"Choose from grand halls and garden rooms \u2014 King's Great Hall, the East & West Garden Rooms, the stone Knight's Castle."},
+        {ic:"\u26E9",title:"Courtyard ceremonies",desc:"The Queen's Courtyard (five soaring stone arches) or Knight's Courtyard with a gazebo & fountain."},
+        {ic:"\u2728",title:"Coordinator + the basics",desc:"A dedicated venue coordinator, tables, chairs, white linens, candle centerpieces, and a bridal dressing suite."},
+        {ic:"\u{1F37D}",title:"Bring your own vendors",desc:"Full flexibility to choose your caterer and pros (1918 Cellars house wine is used for wine service)."},
+        {ic:"\u{1F46A}",title:"Up to ~300 guests",desc:"Rooms scale from intimate micro-weddings to grand 300-guest celebrations."},
+        {ic:"\u{1F409}",title:"A whole estate to roam",desc:"Gardens, the largest outdoor model railroad in Michigan, and a dragon statue to hunt down."},
+      ],
+      shots:{
+        arrival:["the stone gatehouse + turrets at golden hour","guests walking the entrance drive","castle reflected in a courtyard fountain","close-up: ivy on the stone walls"],
+        ceremony:["Queen's Courtyard arches set with white chairs","aisle view toward the stone arch","ring exchange under the crenellations","garden ceremony detail \u2014 florals on stone"],
+        reception:["King's Great Hall with iron chandeliers","candlelit tablescape in a garden room","first dance under white chandeliers","French doors open to the courtyard at dusk"],
+        guest:["cocktail hour in the gardens","guests exploring the castle grounds","kids on the model railroad","bridal suite getting-ready moment"],
+        area:["downtown Charlevoix waterfront","a Lake Michigan sunset","the famous Mushroom Houses","a winery / boat-day afternoon"],
+        signature:["the dragon statue \u2014 obligatory photo","full castle facade, wide","turret + sky detail","the formal garden in bloom"],
+      },
+    },
+    {
+      id:"beaches", slug:"beaches-turks", num:"Venue 02",
+      name:"Beaches Turks & Caicos", location:"Grace Bay, Providenciales",
+      theme:"Family Vacation Paradise", vc:"var(--sea)", vcDeep:"#0A8A90",
+      searchTerm:"Beaches Turks and Caicos wedding Grace Bay",
+      sources:{ site:"https://www.beaches.com/turks-caicos/weddings/", siteLabel:"beaches.com", ig:"https://www.instagram.com/beachesresortsweddings/", igLabel:"@beachesresortsweddings" },
+      moods:["Tropical","Family-Friendly","Fun","All-Inclusive"],
+      oneLiner:"A wedding and a family vacation rolled into one, on the world's best beach.",
+      lead:"Picture barefoot vows on 12 miles of powder-white sand, then a week of waterparks, snorkeling and 20-something restaurants so every guest \u2014 from toddlers to grandparents \u2014 has the trip of their life.",
+      why:"It's the everyone's-invited option: an all-inclusive resort where the celebration becomes a shared family vacation on legendary Grace Bay.",
+      note:"the whole crew, one beach, zero stress",
+      included:[
+        {ic:"\u{1F492}",title:"WeddingMoons packages",desc:"All-inclusive planning, ceremony setup, dining and photography \u2014 plus a dedicated wedding planner."},
+        {ic:"\u26F1",title:"Ceremony, your way",desc:"Beachfront, an oceanfront gazebo, the Garden of Love, or the Schooner Sunset Wedding Deck."},
+        {ic:"\u{1F37E}",title:"Receptions big & small",desc:"From Key West Village to the Pavilion and Ballroom for larger celebrations."},
+        {ic:"\u{1F3CA}",title:"45,000 sq ft waterpark",desc:"Plus 10 pools, 15 bars, two Red Lane spas and a Kids Camp for infants to teens."},
+        {ic:"\u{1F374}",title:"20+ restaurants",desc:"Truly all-inclusive dining, from fine dining to a beachside jerk shack."},
+        {ic:"\u2708",title:"15 min from the airport",desc:"Six themed villages on one easy, walkable resort \u2014 short transfer, long memories."},
+      ],
+      shots:{
+        arrival:["resort arrival + welcome drink","the turquoise-water first view","a themed village lobby","beach cabana with your names on it"],
+        ceremony:["barefoot beach ceremony, ocean behind","oceanfront gazebo draped in white","aisle of petals on the sand","sunset vows silhouette"],
+        reception:["beachside reception, string lights","tablescape with sea-glass tones","dance floor under the stars","sparkler send-off on the sand"],
+        guest:["the waterpark in full swing","kids at Kids Camp","snorkeling on the reef","grandparents relaxing poolside"],
+        area:["aerial of Grace Bay's 12-mile beach","a Providenciales excursion boat","conch shack / local flavor","a Caribbean sunset cruise"],
+        signature:["that impossibly turquoise water","the swim-up bar","whole-family group shot on the beach","Grace Bay from above"],
+      },
+    },
+    {
+      id:"hyatt", slug:"hyatt-aruba", num:"Venue 03",
+      name:"Hyatt Regency Aruba", location:"Palm Beach, Aruba",
+      theme:"Elegant Tropical Escape", vc:"var(--coral)", vcDeep:"#E84C3B",
+      searchTerm:"Hyatt Regency Aruba wedding Palm Beach",
+      sources:{ site:"https://www.hyatt.com/hyatt-regency/en-US/auaru-hyatt-regency-aruba-resort-spa-and-casino", siteLabel:"hyatt.com", ig:"https://www.instagram.com/hyattregencyaruba/", igLabel:"@hyattregencyaruba" },
+      moods:["Elegant","Sunset","Luxury","Tropical"],
+      oneLiner:"Upscale, sunset-soaked, and effortlessly tropical \u2014 polished without the stiffness.",
+      lead:"On Aruba's glamorous Palm Beach, swaying palms and lagoon pools set the scene for sunset ceremonies and refined receptions \u2014 the grown-up tropical wedding that still feels like a holiday.",
+      why:"It threads the needle: a genuinely upscale beachfront resort that stays relaxed and warm rather than formal. Sophistication with sand between your toes.",
+      note:"sunsets here are basically showing off",
+      included:[
+        {ic:"\u{1F305}",title:"Sunset beach ceremonies",desc:"Palm Beach faces west \u2014 ceremonies time out to a glowing Caribbean sunset backdrop."},
+        {ic:"\u{1F334}",title:"Lush 12-acre grounds",desc:"Multi-level lagoon pools, gardens and a stretch of Aruba's calmest, prettiest beach."},
+        {ic:"\u{1F942}",title:"Ballroom + open-air spaces",desc:"Elegant indoor ballrooms and breezy oceanfront terraces for receptions of any size."},
+        {ic:"\u{1F478}",title:"On-site wedding team",desc:"Dedicated coordinators and customizable packages handle catering, decor and the day-of flow."},
+        {ic:"\u{1F378}",title:"Dining, spa & casino",desc:"Multiple restaurants, a full-service spa, and the on-site Stellaris casino for the night owls."},
+        {ic:"\u2600",title:"\u201cOne Happy Island\u201d weather",desc:"Aruba sits below the hurricane belt \u2014 reliably sunny, perfect for a fall 2028 date."},
+      ],
+      shots:{
+        arrival:["resort entrance + palm-lined drive","lagoon pool first impression","oceanfront lobby view","welcome detail on Palm Beach"],
+        ceremony:["beachfront ceremony at sunset","arch framing the horizon","aisle toward the sea","exchanging rings, golden light"],
+        reception:["elegant ballroom tablescape","oceanfront terrace dinner","candlelit lounge area","band / dance floor glamour"],
+        guest:["palapa loungers on Palm Beach","spa relaxation moment","Stellaris casino night","catamaran day trip"],
+        area:["Palm Beach high-rise strip at dusk","California Lighthouse","Aruba's desert + divi-divi trees","a vibrant local sunset bar"],
+        signature:["the signature Aruba sunset","palms against the sky","lagoon pool aerial","toes-in-sand cocktail hour"],
+      },
+    },
+    {
+      id:"greatwolf", slug:"great-wolf", num:"Venue 04",
+      name:"Great Wolf Lodge", location:"Sandusky, Ohio",
+      theme:"Unexpectedly Fun", vc:"var(--palm)", vcDeep:"#2C8552",
+      searchTerm:"Great Wolf Lodge Sandusky wedding event",
+      sources:{ site:"https://www.greatwolf.com/sandusky", siteLabel:"greatwolf.com/sandusky", ig:"https://www.instagram.com/greatwolflodge/", igLabel:"@greatwolflodge" },
+      moods:["Fun","Family-Focused","Playful","Memorable"],
+      oneLiner:"The wildcard. A wedding that doubles as the most legendary family weekend ever.",
+      lead:"Hear us out: a cozy north-woods lodge, an indoor waterpark, and a wedding nobody will ever stop talking about. It's the option with the best story \u2014 and we're leaning all the way in.",
+      why:"Pure joy and zero pretension. The kids (and let's be honest, the adults) get a waterpark; you get a celebration with a one-of-a-kind story. The fun is the feature.",
+      note:"yes we're serious. yes there's a waterpark. it RULES.",
+      included:[
+        {ic:"\u{1F43A}",title:"North-woods lodge vibe",desc:"A warm timber-and-stone great room with a towering fireplace \u2014 cabin-cozy, crowd-friendly."},
+        {ic:"\u{1F3DE}",title:"Event & conference space",desc:"Flexible banquet rooms for the ceremony and reception, with on-site event staff."},
+        {ic:"\u{1F30A}",title:"Indoor waterpark",desc:"A giant climate-controlled waterpark \u2014 weatherproof entertainment for every guest, all weekend."},
+        {ic:"\u{1F3E8}",title:"Everyone stays on-site",desc:"Suites for the whole party means the celebration never really stops."},
+        {ic:"\u{1F3B3}",title:"Endless activities",desc:"Ropes course, mini-golf, arcade, bowling and a spa \u2014 nobody is ever bored."},
+        {ic:"\u{1F697}",title:"Easy + drivable",desc:"In Sandusky near Cedar Point \u2014 an accessible road-trip weekend, no flights required."},
+      ],
+      shots:{
+        arrival:["the grand timber lodge entrance","the great-room fireplace","wolf-ear hoodies group shot","check-in welcome moment"],
+        ceremony:["banquet-room ceremony, dressed up","aisle with a rustic-lodge backdrop","vows + a wink of whimsy","ring shot, cozy lighting"],
+        reception:["ballroom reception, warm lighting","tablescape with woodland greens","first dance, full dancefloor","late-night dessert spread"],
+        guest:["the waterpark wave pool","kids on the waterslides","arcade / bowling fun","ropes course adventure"],
+        area:["Cedar Point coaster skyline","Lake Erie shoreline","Sandusky bay sunset","a classic Ohio road-trip stop"],
+        signature:["the iconic waterpark hero shot","wolf ears + wedding attire","the giant fireplace portrait","everyone in the wave pool"],
+      },
+    },
+    {
+      id:"sandos", slug:"sandos-finisterra", num:"Venue 05",
+      name:"Sandos Finisterra", location:"Cabo San Lucas, Mexico",
+      theme:"Clifftop Adventure", vc:"var(--sun)", vcDeep:"#D6912A",
+      searchTerm:"Sandos Finisterra Cabo San Lucas wedding",
+      sources:{ site:"https://www.sandos.com/sandos-finisterra/los-cabos-all-inclusive-resort", siteLabel:"sandos.com", ig:"https://www.instagram.com/sandosfinisterra/", igLabel:"@sandosfinisterra" },
+      moods:["Adventure","Sunset","Ocean Views","Luxury"],
+      oneLiner:"\u201cThe End of the Earth\u201d \u2014 a dramatic clifftop perch where the desert meets the Pacific.",
+      lead:"Set on a cliff at the very tip of the Baja Peninsula by the Land's End Arch, Finisterra trades Caribbean calm for big Pacific drama: golden beaches, mountaintop terraces, and sunsets that feel cinematic.",
+      why:"A boldly different destination than the Caribbean picks \u2014 rugged, panoramic, adventurous \u2014 with downtown Cabo and the marina just a stroll away.",
+      note:"sunsets at the end of the earth. iconic.",
+      included:[
+        {ic:"\u{1F30B}",title:"Three dramatic venues",desc:"Beachfront, a desert garden, or the panoramic mountaintop terrace overlooking Cabo."},
+        {ic:"\u{1F3D6}",title:"7 acres of golden beach",desc:"A sweeping Pacific shoreline (gorgeous for ceremonies & photos) right by Land's End."},
+        {ic:"\u{1F381}",title:"\u201cDreamcatcher\u201d packages",desc:"All-inclusive: cake, flowers, setup, photography and a dedicated wedding team."},
+        {ic:"\u{1F379}",title:"All-inclusive resort fun",desc:"Three pools (incl. an adults-only swim-up bar), a mountainside spa, and nightly entertainment."},
+        {ic:"\u{1F42B}",title:"Adventure on tap",desc:"Sea-turtle swims, camel safaris, sailing, yacht cruises and tequila tastings for your guests."},
+        {ic:"\u{1F30A}",title:"Two seas, one view",desc:"Where the Pacific meets the Sea of Cort\u00e9s \u2014 panoramic vistas from nearly everywhere."},
+      ],
+      shots:{
+        arrival:["clifftop resort first view","the Land's End Arch from the beach","lobby framing the Pacific","welcome margarita moment"],
+        ceremony:["beach ceremony, Pacific waves behind","mountaintop terrace at sunset","aisle toward the ocean","desert-garden ceremony detail"],
+        reception:["clifftop terrace dinner at dusk","tablescape in warm amber tones","dancing with the bay lit up below","sparklers over the Pacific"],
+        guest:["adults-only swim-up bar","a sunset catamaran cruise","downtown Cabo marina night","spa del Mar relaxation"],
+        area:["Land's End Arch & rock formations","Cabo marina + yachts","the Baja desert landscape","a dramatic Pacific sunset"],
+        signature:["the Arch at golden hour","clifftop panorama, wide","sun dropping into the Pacific","desert-meets-ocean hero shot"],
+      },
+    },
+  ],
+};
+
+</script>
+<script>
+(function(){
+  const VID = document.body.dataset.venueId;
+  const v = WED.venues.find(x=>x.id===VID);
+  if(!v){ document.getElementById('venuePage').innerHTML='<div class="wrap" style="padding:80px 0">Venue not found.</div>'; return; }
+  document.title = v.name + " — Gabrielle & Kris";
+  const idx = WED.venues.findIndex(x=>x.id===VID);
+  const prev = WED.venues[(idx-1+WED.venues.length)%WED.venues.length];
+  const next = WED.venues[(idx+1)%WED.venues.length];
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+  const enc = s => encodeURIComponent(s);
+  const gImages = q => `https://www.google.com/search?tbm=isch&q=${enc(q)}`;
+  const pinSearch = q => `https://www.pinterest.com/search/pins/?q=${enc(q)}`;
+  const term = v.searchTerm || (v.name+" wedding");
+
+  /* hero */
+  const heroHTML = `
+  <section class="vhero"><div class="wrap">
+    <div class="top">
+      <a class="back" href="index.html#venues">&larr; All venues</a>
+      <div class="faves">
+        <button class="fave" data-venue="${v.id}" data-state="love" aria-pressed="false"><span class="ic">&#9829;</span>Love it</button>
+        <button class="fave" data-venue="${v.id}" data-state="maybe" aria-pressed="false"><span class="ic">&#128077;</span>Maybe</button>
+        <button class="fave" data-venue="${v.id}" data-state="info" aria-pressed="false"><span class="ic">&#128269;</span>More info</button>
+      </div>
+    </div>
+    <div class="sub">
+      <span class="kicker">${v.num}</span>
+      <span class="theme"><span class="sq"></span>${v.theme}</span>
+      <span>&#9679; ${v.location}</span>
+    </div>
+    <h1>${v.name}</h1>
+    <div class="vhero-media">
+      <image-slot id="${v.id}-hero" shape="rect" fit="cover" placeholder="Drop your hero photo of ${esc(v.name)}"></image-slot>
+    </div>
+  </div></section>`;
+
+  /* intro */
+  const introHTML = `
+  <section class="vhero"><div class="wrap"><div class="vintro">
+    <div>
+      <p class="lead">${v.lead}</p>
+      <span class="note hand">${v.note}</span>
+    </div>
+    <div class="why">
+      <h4>Why it&rsquo;s interesting</h4>
+      <p>${v.why}</p>
+      <div class="tags" style="margin-top:16px">${v.moods.map(m=>`<span class="tag">${m}</span>`).join('')}</div>
+    </div>
+  </div></div></section>`;
+
+  /* gallery */
+  let galHTML = `<section class="gal"><div class="wrap">
+    <div class="sec-head"><div><span class="kicker">The galleries</span><h2 class="sec-title" style="font-family:var(--font-display);font-weight:800;font-size:clamp(30px,4.4vw,52px);letter-spacing:-.02em;margin:.25em 0 0;line-height:1">What it feels like to marry here</h2></div><p>Every frame is a drop-zone. Hit <strong>&#128269; Find photos</strong> on any frame, then drag a picture you love straight onto it &mdash; even from another browser tab. Already filled? <strong>Hover it for Replace / Remove.</strong> Tap the <strong>&#9825;</strong> to pin it to your board.</p></div>
+    <div class="srcbar">
+      <span class="srclabel">&#128247; Find ${esc(v.name)} photos:</span>
+      ${v.sources&&v.sources.site?`<a class="srcbtn" href="${v.sources.site}" target="_blank" rel="noopener">&#127760; Official site &nearr;</a>`:''}
+      ${v.sources&&v.sources.ig?`<a class="srcbtn" href="${v.sources.ig}" target="_blank" rel="noopener">&#128248; Instagram ${v.sources.igLabel?`<span class="muted">${esc(v.sources.igLabel)}</span>`:''} &nearr;</a>`:''}
+      <a class="srcbtn" href="${pinSearch(term)}" target="_blank" rel="noopener">&#128204; Pinterest &nearr;</a>
+      <a class="srcbtn" href="${gImages(term)}" target="_blank" rel="noopener">&#128269; Google Images &nearr;</a>
+    </div>`;
+  WED.galleryCats.forEach(cat=>{
+    const shots = (v.shots[cat.key]||[]);
+    galHTML += `<div class="gal-cat">
+      <div class="ghead"><span class="gn">${cat.gn}</span><h3>${cat.title}</h3>
+        <a class="catsearch" href="${gImages(term+' '+cat.title)}" target="_blank" rel="noopener" title="Search images for ${esc(cat.title)}">&#128269; search this category &nearr;</a></div>
+      <p class="gq">&ldquo;${cat.q}&rdquo;</p>
+      <div class="masonry">`;
+    shots.forEach((s,i)=>{
+      const id = `${v.id}-${cat.key}-${i}`;
+      // vary heights for masonry rhythm
+      const h = [320,240,280,360,260][i%5];
+      galHTML += `<div class="cell">
+        <a class="findbtn" href="${gImages(term+' '+s)}" target="_blank" rel="noopener" title="Find a photo: ${esc(s)}">&#128269;<span>Find photos</span></a>
+        <button class="pinbtn" data-pin-id="${id}" data-venue="${v.id}" data-venue-name="${esc(v.name)}" data-cat="${esc(cat.title)}" data-caption="${esc(s)}" aria-label="Pin to board">&#9825;</button>
+        <image-slot id="${id}" shape="rounded" radius="14" fit="cover" style="height:${h}px" placeholder="${esc(s)}"></image-slot>
+      </div>`;
+    });
+    galHTML += `</div></div>`;
+  });
+  galHTML += `</div></section>`;
+
+  /* included */
+  let inclHTML = `<section class="incl"><div class="wrap">
+    <div class="sec-head"><div><span class="kicker">The practical magic</span><h2 style="font-family:var(--font-display);font-weight:800;font-size:clamp(30px,4.4vw,52px);letter-spacing:-.02em;margin:.25em 0 0;line-height:1">What&rsquo;s included</h2></div><p>The good stuff this venue brings to the table &mdash; researched, not guessed.</p></div>
+    <div class="incl-grid">`;
+  v.included.forEach(c=>{
+    inclHTML += `<div class="incl-card"><div class="ic">${c.ic}</div><h4>${c.title}</h4><p>${c.desc}</p></div>`;
+  });
+  inclHTML += `</div></div></section>`;
+
+  /* notes */
+  const notesHTML = `<section class="notes"><div class="wrap"><div class="box">
+    <h3>Notes on ${v.name}</h3>
+    <p class="prompt">What stands out to you about this venue? (Saved automatically, just for the two of you.)</p>
+    <textarea data-note-venue="${v.id}" placeholder="e.g. love the sunset ceremony spot... but how far is the airport?"></textarea>
+    <div class="saved" data-note-saved="${v.id}"></div>
+  </div></div></section>`;
+
+  /* prev / next */
+  const navHTML = `<section class="vhero"><div class="wrap"><div class="vnav">
+    <a class="prev" href="${prev.slug}.html"><div class="lbl">&larr; Previous</div><div class="nm">${prev.name}</div></a>
+    <a class="next" href="${next.slug}.html"><div class="lbl">Next &rarr;</div><div class="nm">${next.name}</div></a>
+  </div></div></section>`;
+
+  document.getElementById('venuePage').innerHTML = heroHTML+introHTML+galHTML+inclHTML+notesHTML+navHTML;
+})();
+</script>
+<script>
+/* =====================================================================
+   Shared interactions: favorites, notes, board pins, mood filter, nav.
+   Plain vanilla JS. State in localStorage so it persists across pages.
+   ===================================================================== */
+(function(){
+  "use strict";
+  const LS = {
+    fav:  (v)=>"wed:fav:"+v,
+    note: (v)=>"wed:note:"+v,
+    pins: "wed:pins",
+  };
+  const get = (k,d)=>{ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} };
+  const set = (k,v)=>{ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} };
+
+  /* ---------- toast ---------- */
+  let toastWrap;
+  function toast(msg, em){
+    if(!toastWrap){ toastWrap=document.createElement('div'); toastWrap.className='toast-wrap'; document.body.appendChild(toastWrap); }
+    const t=document.createElement('div'); t.className='toast';
+    t.innerHTML=(em?`<span class="em">${em}</span>`:'')+`<span>${msg}</span>`;
+    toastWrap.appendChild(t);
+    requestAnimationFrame(()=>t.classList.add('show'));
+    setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),350); }, 2400);
+  }
+  window.wedToast = toast;
+
+  /* ---------- pins ---------- */
+  function getPins(){ return get(LS.pins, []); }
+  function isPinned(id){ return getPins().some(p=>p.id===id); }
+  function togglePin(rec){
+    let pins=getPins();
+    const i=pins.findIndex(p=>p.id===rec.id);
+    if(i>=0){ pins.splice(i,1); set(LS.pins,pins); return false; }
+    pins.push(rec); set(LS.pins,pins); return true;
+  }
+  window.wedPins = { get:getPins, isPinned, toggle:togglePin };
+
+  /* ---------- nav ---------- */
+  function initNav(){
+    const cnt=document.querySelector('.nav-board .cnt');
+    if(cnt) cnt.textContent = getPins().length;
+    const toggle=document.querySelector('.nav-toggle');
+    const links=document.querySelector('.nav-links');
+    if(toggle&&links){ toggle.addEventListener('click',()=>links.classList.toggle('open')); }
+  }
+
+  /* ---------- favorite buttons ---------- */
+  function initFaves(){
+    const groups={};
+    document.querySelectorAll('.fave[data-venue][data-state]').forEach(b=>{
+      const v=b.dataset.venue; (groups[v]=groups[v]||[]).push(b);
+    });
+    Object.keys(groups).forEach(v=>{
+      const cur=get(LS.fav(v),null);
+      groups[v].forEach(b=>{
+        b.setAttribute('aria-pressed', String(b.dataset.state===cur));
+        b.addEventListener('click',()=>{
+          const now=get(LS.fav(v),null);
+          const next = now===b.dataset.state ? null : b.dataset.state;
+          set(LS.fav(v),next);
+          groups[v].forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.state===next)));
+          if(next){
+            const m={love:['Love it!','\u2764\uFE0F'],maybe:['Filed under maybe','\u{1F914}'],info:['Noted \u2014 need more info','\u{1F50D}']}[next];
+            toast(m[0],m[1]);
+          }
+        });
+      });
+    });
+  }
+
+  /* ---------- notes ---------- */
+  function initNotes(){
+    document.querySelectorAll('textarea[data-note-venue]').forEach(ta=>{
+      const v=ta.dataset.noteVenue;
+      ta.value=get(LS.note(v),"")||"";
+      const saved=document.querySelector(`[data-note-saved="${v}"]`);
+      let t;
+      ta.addEventListener('input',()=>{
+        set(LS.note(v),ta.value);
+        if(saved){ saved.textContent="Saved \u2713"; clearTimeout(t); t=setTimeout(()=>saved.textContent="",1400); }
+      });
+    });
+  }
+
+  /* ---------- pin buttons (gallery) ---------- */
+  function initPinButtons(){
+    document.querySelectorAll('.pinbtn[data-pin-id]').forEach(b=>{
+      const id=b.dataset.pinId;
+      if(isPinned(id)){ b.classList.add('pinned'); b.innerHTML='\u2764'; }
+      b.addEventListener('click',()=>{
+        const on=togglePin({id, venue:b.dataset.venue, venueName:b.dataset.venueName, cat:b.dataset.cat, caption:b.dataset.caption});
+        b.classList.toggle('pinned',on);
+        b.innerHTML = on?'\u2764':'\u2661';
+        toast(on?'Pinned to your board':'Removed from board', on?'\u{1F4CC}':'');
+        const cnt=document.querySelector('.nav-board .cnt'); if(cnt) cnt.textContent=getPins().length;
+      });
+    });
+  }
+
+  /* ---------- mood filter (showdown) ---------- */
+  function initMoodFilter(){
+    const chips=document.querySelectorAll('[data-mood-chip]');
+    if(!chips.length) return;
+    chips.forEach(c=>c.addEventListener('click',()=>{
+      const mood=c.dataset.moodChip;
+      chips.forEach(x=>x.setAttribute('aria-pressed',String(x===c)));
+      document.querySelectorAll('[data-row-moods]').forEach(row=>{
+        const moods=(row.dataset.rowMoods||'').split('|');
+        const show = mood==='all' || moods.includes(mood);
+        row.style.display = show?'':'none';
+      });
+    }));
+  }
+
+  /* ---------- preserve preview auth token across internal links ---------- */
+  /* In preview, the access token lives in location.search; relative links drop
+     it and 404. Re-point internal .html links to carry the current query.
+     No-ops on download/export (location.search is empty there). */
+  function patchLinks(){
+    const q=location.search;
+    if(!q) return;
+    document.querySelectorAll('a[href]').forEach(a=>{
+      const href=a.getAttribute('href');
+      if(!href || /^(https?:|mailto:|tel:|#)/i.test(href)) return;
+      const hashIdx=href.indexOf('#');
+      const path = hashIdx>=0 ? href.slice(0,hashIdx) : href;
+      const hash = hashIdx>=0 ? href.slice(hashIdx) : '';
+      if(/\.html$/i.test(path)){ a.setAttribute('href', path+q+hash); }
+    });
+  }
+
+  /* ---------- "Save photos to your repo" folder connector ---------- */
+  /* Uses the File System Access API (window.ImageSlotFS, exposed by
+     image-slot.js). When connected, dropped/replaced photos are written as
+     real files into the repo's images/ folder + manifest.json — commit & push
+     and they're live for everyone. No bake step. */
+  function initFolderBar(){
+    const FS = window.ImageSlotFS;
+    if(!FS) return;
+    const bar=document.createElement('div'); bar.className='fsbar';
+    document.body.appendChild(bar);
+    const render=()=>{
+      if(!FS.supported){
+        bar.className='fsbar warn';
+        bar.innerHTML='<span class="ic">&#9888;</span><span>To save photos into your repo, open this site in <strong>Chrome</strong> or <strong>Edge</strong>. (Photos you drop still show on this device.)</span><button class="x" aria-label="Dismiss">&times;</button>';
+      } else if(FS.isReady()){
+        bar.className='fsbar ok';
+        bar.innerHTML='<span class="ic">&#10003;</span><span>Saving photos to <strong>'+(FS.folderName()||'your folder')+'/images</strong>. Commit &amp; push to share.</span><button class="x" aria-label="Dismiss">&times;</button>';
+      } else {
+        bar.className='fsbar';
+        bar.innerHTML='<span class="ic">&#128193;</span><span>Connect your repo folder so dropped photos save as real files (shareable via GitHub).</span><button class="connect">Connect folder</button><button class="x" aria-label="Dismiss">&times;</button>';
+      }
+      const c=bar.querySelector('.connect');
+      if(c) c.addEventListener('click',async()=>{
+        c.disabled=true; c.textContent='Connecting…';
+        try{ const name=await FS.connect(); if(window.wedToast) window.wedToast('Connected — saving to '+name+'/images','\u{1F4C1}'); }
+        catch(e){ if(window.wedToast) window.wedToast(e&&e.message==='not-supported'?'Use Chrome or Edge to save into the folder':'Folder not connected',''); c.disabled=false; c.textContent='Connect folder'; }
+      });
+      const x=bar.querySelector('.x');
+      if(x) x.addEventListener('click',()=>{ bar.remove(); });
+    };
+    render();
+    FS.onChange(render);
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    patchLinks(); initNav(); initFaves(); initNotes(); initPinButtons(); initMoodFilter(); initFolderBar();
+  });
+})();
+
+</script>
+</body>
+</html>
