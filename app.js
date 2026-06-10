@@ -185,40 +185,6 @@
     });
   }
 
-  /* ---------- "Save photos to your repo" folder connector ---------- */
-  /* Uses the File System Access API (window.ImageSlotFS, exposed by
-     image-slot.js). When connected, dropped/replaced photos are written as
-     real files into the repo's images/ folder + manifest.json — commit & push
-     and they're live for everyone. No bake step. */
-  function initFolderBar(){
-    const FS = window.ImageSlotFS;
-    if(!FS) return;
-    const bar=document.createElement('div'); bar.className='fsbar';
-    document.body.appendChild(bar);
-    const render=()=>{
-      if(!FS.supported){
-        bar.className='fsbar warn';
-        bar.innerHTML='<span class="ic">&#9888;</span><span>To save photos into your repo, open this site in <strong>Chrome</strong> or <strong>Edge</strong>. (Photos you drop still show on this device.)</span><button class="x" aria-label="Dismiss">&times;</button>';
-      } else if(FS.isReady()){
-        bar.className='fsbar ok';
-        bar.innerHTML='<span class="ic">&#10003;</span><span>Saving photos to <strong>'+(FS.folderName()||'your folder')+'/images</strong>. Commit &amp; push to share.</span><button class="x" aria-label="Dismiss">&times;</button>';
-      } else {
-        bar.className='fsbar';
-        bar.innerHTML='<span class="ic">&#128193;</span><span>Connect your repo folder so dropped photos save as real files (shareable via GitHub).</span><button class="connect">Connect folder</button><button class="x" aria-label="Dismiss">&times;</button>';
-      }
-      const c=bar.querySelector('.connect');
-      if(c) c.addEventListener('click',async()=>{
-        c.disabled=true; c.textContent='Connecting…';
-        try{ const name=await FS.connect(); if(window.wedToast) window.wedToast('Connected — saving to '+name+'/images','\u{1F4C1}'); }
-        catch(e){ if(window.wedToast) window.wedToast(e&&e.message==='not-supported'?'Use Chrome or Edge to save into the folder':'Folder not connected',''); c.disabled=false; c.textContent='Connect folder'; }
-      });
-      const x=bar.querySelector('.x');
-      if(x) x.addEventListener('click',()=>{ bar.remove(); });
-    };
-    render();
-    FS.onChange(render);
-  }
-
   // Re-runnable wiring for dynamically-rendered content (venue grid, venue
   // page, showdown rows are built async from Supabase, after
   // DOMContentLoaded has already fired).
@@ -228,6 +194,6 @@
   };
 
   document.addEventListener('DOMContentLoaded',()=>{
-    patchLinks(); initNav(); initFaves(); initNotes(); initPinButtons(); initMoodFilter(); initFolderBar();
+    patchLinks(); initNav(); initFaves(); initNotes(); initPinButtons(); initMoodFilter();
   });
 })();
